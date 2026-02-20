@@ -17,13 +17,15 @@ import {
   Sparkles,
   AlignLeft,
   Send,
-  Users
+  Users,
+  Clock
 } from "lucide-react";
 
 const STEPS = [
   { id: "event", title: "Select Event", icon: CalendarDays },
   { id: "targeting", title: "Targeting", icon: Target },
   { id: "content", title: "Content", icon: AlignLeft },
+  { id: "schedule", title: "Schedule", icon: Clock },
   { id: "review", title: "Review & Launch", icon: Send },
 ];
 
@@ -277,6 +279,50 @@ export default function CampaignBuilder() {
           )}
 
           {currentStep === 3 && (
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in slide-in-from-right-4 duration-300">
+              <div className="space-y-6">
+                <div>
+                  <h3 className="text-xl font-medium">When should we send this?</h3>
+                  <p className="text-sm text-muted-foreground mt-2">
+                    Schedule your campaign to maximize open rates.
+                  </p>
+                </div>
+                
+                <div className="space-y-4 bg-card border border-border rounded-xl p-5 shadow-sm">
+                  <div className="space-y-3">
+                    <Label className="text-base">Send Date</Label>
+                    <Input type="date" defaultValue={new Date().toISOString().split('T')[0]} className="bg-background" />
+                  </div>
+                  
+                  <div className="space-y-3 pt-4 border-t border-border">
+                    <Label className="text-base">Send Time</Label>
+                    <Input type="time" defaultValue="10:00" className="bg-background" />
+                  </div>
+                  
+                  <div className="pt-4 border-t border-border flex items-start space-x-3">
+                    <Checkbox id="smart-send" defaultChecked className="mt-1" />
+                    <Label htmlFor="smart-send" className="font-normal leading-snug cursor-pointer">
+                      <strong>Smart Send:</strong> Automatically optimize delivery time based on when students usually check their email.
+                    </Label>
+                  </div>
+                </div>
+              </div>
+              
+              <div className="flex items-center justify-center">
+                <div className="text-center space-y-4 p-8 bg-muted/20 border border-border rounded-xl max-w-sm">
+                  <div className="w-16 h-16 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
+                    <Clock className="w-8 h-8" />
+                  </div>
+                  <h4 className="font-medium text-lg">Scheduled for Delivery</h4>
+                  <p className="text-sm text-muted-foreground mx-auto">
+                    The campaign will be queued and sent out in batches to ensure maximum deliverability and engagement.
+                  </p>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 4 && (
             <div className="max-w-2xl mx-auto space-y-8 animate-in slide-in-from-right-4 duration-300">
               <div className="text-center space-y-2">
                 <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 text-primary mb-4">
@@ -303,6 +349,15 @@ export default function CampaignBuilder() {
                       <div className="text-sm text-primary mt-1">Matched on: {selectedInterests.join(", ")}</div>
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => setCurrentStep(1)}>Edit</Button>
+                  </div>
+
+                  <div className="flex justify-between p-6 hover:bg-muted/10 transition-colors">
+                    <div>
+                      <div className="text-sm text-muted-foreground mb-1">Schedule</div>
+                      <div className="font-medium text-lg">Send on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at 10:00 AM</div>
+                      <div className="text-sm text-primary mt-1">Smart Send Enabled</div>
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setCurrentStep(3)}>Edit</Button>
                   </div>
 
                   <div className="flex justify-between p-6 hover:bg-muted/10 transition-colors bg-primary/5">
