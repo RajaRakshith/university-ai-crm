@@ -9,15 +9,32 @@ import {
   Bell,
   Sun,
   Moon,
-  TrendingUp
+  TrendingUp,
+  Home,
+  Upload,
+  User,
+  Compass,
+  LogOut,
+  MessageSquare
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from "./ui/dropdown-menu";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
+  const { user, profile, logout } = useAuth();
+
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme-preference");
     if (saved) {
@@ -35,7 +52,15 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     }
   }, [isDark]);
 
-  const navigation = [
+  const studentNavigation = [
+    { name: "Home", href: "/student", icon: Home },
+    { name: "Upload", href: "/student/upload", icon: Upload },
+    { name: "Profile", href: "/student/profile", icon: User },
+    { name: "Discover", href: "/student/discover", icon: Compass },
+    { name: "Campaigns", href: "/student/campaigns", icon: MessageSquare },
+  ];
+
+  const organizerNavigation = [
     { name: "Dashboard", href: "/", icon: BarChart3 },
     { name: "Analytics", href: "/analytics", icon: TrendingUp },
     { name: "Campaigns", href: "/campaigns", icon: Megaphone },
@@ -43,12 +68,20 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     { name: "Events", href: "/events", icon: CalendarDays },
   ];
 
+  const navigation = user?.role === "student" ? studentNavigation : organizerNavigation;
+  const userInitials = profile?.name
+    ?.split(" ")
+    .map((n) => n[0])
+    .join("")
+    .toUpperCase()
+    .slice(0, 2) || user?.email[0].toUpperCase() || "U";
+
   return (
     <div className="flex h-screen bg-background text-foreground">
       {/* Sidebar */}
       <aside className="w-64 hidden md:flex flex-col border-r border-border bg-sidebar shrink-0">
         <div className="p-4 flex items-center h-16 border-b border-border">
-          <Link href="/">
+          <Link href={user?.role === "student" ? "/student" : "/"}>
             <a className="flex items-center gap-3 font-heading font-bold text-lg text-foreground overflow-hidden whitespace-nowrap px-2">
               <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-sm">
                 U
@@ -60,7 +93,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
         <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/');
+            const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/' && item.href !== '/student');
             return (
               <Link key={item.name} href={item.href}>
                 <a className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
@@ -125,10 +158,30 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Bell className="w-4 h-4" />
               <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-foreground rounded-full"></span>
             </Button>
-            <Avatar className="w-8 h-8 cursor-pointer ring-1 ring-border hover:ring-foreground transition-all">
-              <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
-              <AvatarFallback>JD</AvatarFallback>
-            </Avatar>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="ghost" className="relative h-8 w-8 rounded-full">
+                  <Avatar className="w-8 h-8 cursor-pointer ring-1 ring-border hover:ring-foreground transition-all">
+                    <AvatarImage src="" />
+                    <AvatarFallback>{userInitials}</AvatarFallback>
+                  </Avatar>
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent className="w-56" align="end" forceMount>
+                <DropdownMenuLabel className="font-normal">
+                  <div className="flex flex-col space-y-1">
+                    <p className="text-sm font-medium leading-none">{profile?.name || user?.email}</p>
+                    <p className="text-xs leading-none text-muted-foreground">{user?.email}</p>
+                    <p className="text-xs leading-none text-muted-foreground capitalize">{user?.role}</p>
+                  </div>
+                </DropdownMenuLabel>
+                <DropdownMenuSeparator />
+                <DropdownMenuItem onClick={logout} className="cursor-pointer">
+                  <LogOut className="mr-2 h-4 w-4" />
+                  <span>Log out</span>
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </header>
 

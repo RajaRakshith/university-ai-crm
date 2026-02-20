@@ -1,10 +1,36 @@
 import express, { type Request, Response, NextFunction } from "express";
+import session from "express-session";
+import connectPgSimple from "connect-pg-simple";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { pool } from "./db";
 
 const app = express();
 const httpServer = createServer(app);
+
+// Configure session store
+const PgSession = connectPgSimple(session);
+
+// Session configuration
+app.use(
+  session({
+    store: new PgSession({
+      pool: pool,
+      tableName: "session",
+      createTableIfMissing: true,
+    }),
+    secret: process.env.SESSION_SECRET || "change-this-secret-in-production",
+    resave: false,
+    saveUninitialized: false,
+    cookie: {
+      secure: process.env.NODE_ENV === "production",
+      httpOnly: true,
+      maxAge: 7 * 24 * 60 * 60 * 1000, // 7 days
+      sameSite: "lax",
+    },
+  })
+);
 
 declare module "http" {
   interface IncomingMessage {
@@ -41,7 +67,26 @@ app.use((req, res, next) => {
   const originalResJson = res.json;
   res.json = function (bodyJson, ...args) {
     capturedJsonResponse = bodyJson;
+    if (path.startsWith("/api/campaigns")) {
+      console.log(`🟣 [MIDDLEWARE] res.json called for ${path}`);
+      console.log(`🟣 [MIDDLEWARE] Content-Type: ${res.getHeader("content-type")}`);
+      console.log(`🟣 [MIDDLEWARE] Response body type: ${typeof bodyJson}`);
+      console.log(`🟣 [MIDDLEWARE] Response body preview:`, JSON.stringify(bodyJson).substring(0, 200));
+    }
     return originalResJson.apply(res, [bodyJson, ...args]);
+  };
+
+  const originalResSend = res.send;
+  res.send = function (body, ...args) {
+    if (path.startsWith("/api/campaigns")) {
+      console.log(`🟣 [MIDDLEWARE] res.send called for ${path}`);
+      console.log(`🟣 [MIDDLEWARE] Content-Type: ${res.getHeader("content-type")}`);
+      console.log(`🟣 [MIDDLEWARE] Body type: ${typeof body}`);
+      if (typeof body === "string") {
+        console.log(`🟣 [MIDDLEWARE] Body preview: ${body.substring(0, 200)}`);
+      }
+    }
+    return originalResSend.apply(res, [body, ...args]);
   };
 
   res.on("finish", () => {
@@ -51,7 +96,12 @@ app.use((req, res, next) => {
       if (capturedJsonResponse) {
         logLine += ` :: ${JSON.stringify(capturedJsonResponse)}`;
       }
-
+      if (path.startsWith("/api/campaigns")) {
+        console.log(`🟣 [MIDDLEWARE] Response finished for ${path}`);
+        console.log(`🟣 [MIDDLEWARE] Status: ${res.statusCode}`);
+        console.log(`🟣 [MIDDLEWARE] Content-Type: ${res.getHeader("content-type")}`);
+        console.log(`🟣 [MIDDLEWARE] All headers:`, res.getHeaders());
+      }
       log(logLine);
     }
   });
@@ -62,17 +112,27 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
-  app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
+  app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
 
-    console.error("Internal Server Error:", err);
+    console.error("\n🔴 [ERROR HANDLER] ========== Express Error Handler ==========");
+    console.error(`🔴 [ERROR HANDLER] Path: ${req.path}`);
+    console.error(`🔴 [ERROR HANDLER] Method: ${req.method}`);
+    console.error(`🔴 [ERROR HANDLER] Status: ${status}`);
+    console.error(`🔴 [ERROR HANDLER] Message: ${message}`);
+    console.error(`🔴 [ERROR HANDLER] Headers sent: ${res.headersSent}`);
+    console.error(`🔴 [ERROR HANDLER] Content-Type: ${res.getHeader("content-type")}`);
+    console.error(`🔴 [ERROR HANDLER] Full error:`, err);
+    console.error("🔴 [ERROR HANDLER] ============================================\n");
 
     if (res.headersSent) {
+      console.error("🔴 [ERROR HANDLER] Headers already sent, calling next()");
       return next(err);
     }
 
-    return res.status(status).json({ message });
+    res.setHeader("Content-Type", "application/json");
+    return res.status(status).json({ message, error: message });
   });
 
   // importantly only setup vite in development and after
@@ -94,7 +154,6 @@ app.use((req, res, next) => {
     {
       port,
       host: "0.0.0.0",
-      reusePort: true,
     },
     () => {
       log(`serving on port ${port}`);
