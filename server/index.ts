@@ -9,12 +9,16 @@ import { pool } from "./db";
 const app = express();
 const httpServer = createServer(app);
 
+// Railway terminates TLS at the proxy. Trust it so secure cookies work.
+app.set("trust proxy", 1);
+
 // Configure session store
 const PgSession = connectPgSimple(session);
 
 // Session configuration
 app.use(
   session({
+    proxy: true,
     store: new PgSession({
       pool: pool,
       tableName: "session",
