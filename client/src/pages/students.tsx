@@ -1,0 +1,73 @@
+import { AppLayout } from "@/components/layout";
+import { MOCK_STUDENTS } from "@/lib/mock-data";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Search, Filter, Download } from "lucide-react";
+import { Button } from "@/components/ui/button";
+
+export default function Students() {
+  return (
+    <AppLayout>
+      <div className="space-y-6 animate-in fade-in duration-500">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold font-heading tracking-tight mb-2">Student Directory</h1>
+            <p className="text-muted-foreground">Manage inferred interest profiles for all students.</p>
+          </div>
+          <div className="flex gap-2 w-full md:w-auto">
+            <Button variant="outline" className="gap-2"><Filter className="w-4 h-4"/> Filter</Button>
+            <Button variant="outline" className="gap-2"><Download className="w-4 h-4"/> Export</Button>
+          </div>
+        </div>
+        
+        <Card className="border-border/50 shadow-sm overflow-hidden">
+          <div className="p-4 border-b border-border/50 bg-muted/10 flex items-center gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+              <Input 
+                placeholder="Search students by name, major, or interest..." 
+                className="pl-9 bg-background border-border/50"
+              />
+            </div>
+          </div>
+          <CardContent className="p-0">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-muted/30 text-muted-foreground border-b border-border/50">
+                <tr>
+                  <th className="px-6 py-4 font-medium">Name</th>
+                  <th className="px-6 py-4 font-medium">Program</th>
+                  <th className="px-6 py-4 font-medium">Grad Year</th>
+                  <th className="px-6 py-4 font-medium">Top Interests</th>
+                  <th className="px-6 py-4 font-medium text-right">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/30">
+                {MOCK_STUDENTS.map(student => (
+                  <tr key={student.id} className="hover:bg-muted/10 transition-colors">
+                    <td className="px-6 py-4">
+                      <div className="font-medium text-foreground">{student.name}</div>
+                    </td>
+                    <td className="px-6 py-4">{student.program}</td>
+                    <td className="px-6 py-4">{student.year}</td>
+                    <td className="px-6 py-4">
+                      <div className="flex gap-2 flex-wrap">
+                        {student.interests.map(i => (
+                          <span key={i.tag} className="px-2 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium border border-border/50">
+                            {i.tag}
+                          </span>
+                        ))}
+                      </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Button variant="ghost" size="sm">View Profile</Button>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </CardContent>
+        </Card>
+      </div>
+    </AppLayout>
+  );
+}
