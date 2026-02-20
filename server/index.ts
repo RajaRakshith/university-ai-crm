@@ -112,6 +112,13 @@ app.use((req, res, next) => {
 (async () => {
   await registerRoutes(httpServer, app);
 
+  // Unmatched API routes: send 404 JSON once (prevents "cannot 404 after headers sent")
+  app.use((req: Request, res: Response, next: NextFunction) => {
+    if (!req.path.startsWith("/api")) return next();
+    if (res.headersSent) return next();
+    res.status(404).json({ error: "Not found", message: `Cannot ${req.method} ${req.path}` });
+  });
+
   app.use((err: any, req: Request, res: Response, next: NextFunction) => {
     const status = err.status || err.statusCode || 500;
     const message = err.message || "Internal Server Error";
@@ -132,7 +139,8 @@ app.use((req, res, next) => {
     }
 
     res.setHeader("Content-Type", "application/json");
-    return res.status(status).json({ message, error: message });
+    res.status(status).json({ message, error: message });
+    return;
   });
 
   // importantly only setup vite in development and after
