@@ -7,7 +7,6 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Slider } from "@/components/ui/slider";
 import { Textarea } from "@/components/ui/textarea";
-import { MOCK_EVENTS, MOCK_STUDENTS, INTEREST_TAGS } from "@/lib/mock-data";
 import { 
   ChevronRight, 
   ChevronLeft, 
@@ -26,6 +25,11 @@ import {
   Mail,
   MessageSquare
 } from "lucide-react";
+
+// TODO: Fetch from API
+const MOCK_EVENTS = [{ id: "1", name: "Sample Event", category: ["AI"], date: "TBD", capacity: 100, signups: 0 }];
+const MOCK_STUDENTS = [];
+const INTEREST_TAGS = ["AI", "Healthcare", "Startups", "Finance"];
 
 const STEPS = [
   { id: "strategy", title: "Strategy", icon: Lightbulb },

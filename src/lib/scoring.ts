@@ -1,6 +1,52 @@
 import { TopicWeight, StudentVector, EventVector, MatchScore } from './types';
 
 /**
+ * Student with metadata for requirement filtering
+ */
+export interface StudentWithMetadata extends StudentVector {
+  major?: string | null;
+  year?: string | null;
+}
+
+/**
+ * Event with requirements
+ */
+export interface EventWithRequirements extends EventVector {
+  requiredMajors?: string | null;
+  requiredYears?: string | null;
+}
+
+/**
+ * Check if student meets event requirements
+ */
+export function meetsRequirements(
+  student: StudentWithMetadata,
+  event: EventWithRequirements
+): boolean {
+  // Check major requirement
+  if (event.requiredMajors) {
+    const requiredMajors = event.requiredMajors.split(',').map(m => m.trim().toLowerCase());
+    const studentMajor = student.major?.toLowerCase().trim();
+    
+    if (studentMajor && !requiredMajors.some(rm => studentMajor.includes(rm) || rm.includes(studentMajor))) {
+      return false;
+    }
+  }
+  
+  // Check year requirement
+  if (event.requiredYears) {
+    const requiredYears = event.requiredYears.split(',').map(y => y.trim().toLowerCase());
+    const studentYear = student.year?.toLowerCase().trim();
+    
+    if (studentYear && !requiredYears.includes(studentYear)) {
+      return false;
+    }
+  }
+  
+  return true;
+}
+
+/**
  * Calculate cosine similarity between two topic vectors
  */
 export function cosineSimilarity(vec1: TopicWeight[], vec2: TopicWeight[]): number {
@@ -67,11 +113,15 @@ export function filterByThreshold(
  * Calculate match scores for multiple students against one event
  */
 export function scoreStudentsForEvent(
-  students: StudentVector[],
-  event: EventVector,
+  students: StudentWithMetadata[],
+  event: EventWithRequirements,
   threshold?: number
 ): MatchScore[] {
-  const scores = students.map(student => calculateMatchScore(student, event));
+  // First filter by requirements
+  const eligibleStudents = students.filter(student => meetsRequirements(student, event));
+  
+  // Then calculate scores
+  const scores = eligibleStudents.map(student => calculateMatchScore(student, event));
   
   if (threshold !== undefined) {
     return filterByThreshold(scores, threshold);
@@ -84,11 +134,15 @@ export function scoreStudentsForEvent(
  * Calculate match scores for one student against multiple events
  */
 export function scoreEventsForStudent(
-  student: StudentVector,
-  events: EventVector[],
+  student: StudentWithMetadata,
+  events: EventWithRequirements[],
   threshold?: number
 ): MatchScore[] {
-  const scores = events.map(event => calculateMatchScore(student, event));
+  // Filter events where student meets requirements
+  const eligibleEvents = events.filter(event => meetsRequirements(student, event));
+  
+  // Calculate scores
+  const scores = eligibleEvents.map(event => calculateMatchScore(student, event));
   
   if (threshold !== undefined) {
     return filterByThreshold(scores, threshold);

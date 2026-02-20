@@ -3,22 +3,26 @@
 
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = []
 }
 
 datasource db {
-  provider = "sqlite"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
 model Student {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  name      String
-  major     String?
-  year      String?
-  resumeText String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id             String   @id @default(cuid())
+  email          String   @unique
+  name           String
+  major          String?
+  year           String?
+  resumeText     String?
+  resumeUrl      String?
+  transcriptText String?
+  transcriptUrl  String?
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   interests    StudentInterest[]
   interactions Interaction[]
@@ -60,20 +64,23 @@ model Center {
 }
 
 model Event {
-  id          String   @id @default(cuid())
-  centerId    String
-  title       String
-  description String
-  eventDate   DateTime
-  location    String?
-  imageUrl    String?
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id             String   @id @default(cuid())
+  centerId       String
+  title          String
+  description    String
+  eventDate      DateTime
+  location       String?
+  imageUrl       String?
+  requirements   String?  // JSON: skills, majors, years needed
+  requiredMajors String?  // Comma-separated
+  requiredYears  String?  // Comma-separated  
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
-  center    Center      @relation(fields: [centerId], references: [id], onDelete: Cascade)
-  topics    EventTopic[]
-  campaigns Campaign[]
-  digestItems DigestItem[]
+  center       Center        @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  topics       EventTopic[]
+  campaigns    Campaign[]
+  digestItems  DigestItem[]
   interactions Interaction[]
 }
 

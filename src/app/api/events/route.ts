@@ -39,6 +39,9 @@ export async function POST(request: Request) {
       eventDate,
       location,
       topics, // Array of { topic: string, weight: number }
+      requirements, // JSON string of requirements
+      requiredMajors, // Comma-separated majors
+      requiredYears, // Comma-separated years
     } = body;
 
     if (!centerId || !title || !description || !eventDate) {
@@ -56,6 +59,9 @@ export async function POST(request: Request) {
         description,
         eventDate: new Date(eventDate),
         location,
+        requirements,
+        requiredMajors,
+        requiredYears,
       },
     });
 

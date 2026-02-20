@@ -10,6 +10,9 @@ export function serveStatic(app: Express) {
     );
   }
 
+  // Serve uploaded files
+  app.use("/uploads", express.static(path.resolve(process.cwd(), "uploads")));
+
   app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist

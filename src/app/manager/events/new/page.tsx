@@ -19,6 +19,8 @@ export default function NewEventPage() {
     description: '',
     eventDate: '',
     location: '',
+    requiredMajors: '',
+    requiredYears: '',
   });
   const [selectedTopics, setSelectedTopics] = useState<Set<string>>(new Set());
   const [threshold, setThreshold] = useState(0.6);
@@ -200,6 +202,53 @@ export default function NewEventPage() {
                     placeholder="Ross School of Business"
                   />
                 </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-lg shadow p-6">
+            <h2 className="text-xl font-semibold text-gray-900 mb-4">
+              Student Requirements (Optional)
+            </h2>
+            <p className="text-sm text-gray-600 mb-4">
+              Filter students by specific criteria. Leave blank to target all students.
+            </p>
+
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Required Majors (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={formData.requiredMajors}
+                  onChange={(e) =>
+                    setFormData({ ...formData, requiredMajors: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="e.g., Computer Science, Engineering, Business"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Students with any of these majors will be eligible
+                </p>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Required Years (comma-separated)
+                </label>
+                <input
+                  type="text"
+                  value={formData.requiredYears}
+                  onChange={(e) =>
+                    setFormData({ ...formData, requiredYears: e.target.value })
+                  }
+                  className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  placeholder="e.g., Junior, Senior, Graduate"
+                />
+                <p className="text-xs text-gray-500 mt-1">
+                  Only students in these years will be eligible
+                </p>
               </div>
             </div>
           </div>

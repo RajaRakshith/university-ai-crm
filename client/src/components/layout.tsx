@@ -9,15 +9,18 @@ import {
   Bell,
   Sun,
   Moon,
-  TrendingUp
+  TrendingUp,
+  LogOut
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
 import { Input } from "./ui/input";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location, setLocation] = useLocation();
+  const { logout } = useAuth();
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme-preference");
     if (saved) {
@@ -88,6 +91,17 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <button className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors text-sm">
             <Settings className="w-4 h-4 shrink-0 text-muted-foreground" />
             <span>Settings</span>
+          </button>
+
+          <button 
+            onClick={() => {
+              logout();
+              setLocation('/');
+            }}
+            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors text-sm"
+          >
+            <LogOut className="w-4 h-4 shrink-0 text-muted-foreground" />
+            <span>Logout</span>
           </button>
         </div>
       </aside>

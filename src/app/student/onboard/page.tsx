@@ -13,10 +13,87 @@ export default function StudentOnboardPage() {
     major: '',
     year: '',
     resumeText: '',
+    resumeUrl: '',
+    transcriptText: '',
+    transcriptUrl: '',
   });
+  const [resumeFile, setResumeFile] = useState<File | null>(null);
+  const [transcriptFile, setTranscriptFile] = useState<File | null>(null);
+  const [uploadingResume, setUploadingResume] = useState(false);
+  const [uploadingTranscript, setUploadingTranscript] = useState(false);
   const [extractedInterests, setExtractedInterests] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [studentId, setStudentId] = useState<string | null>(null);
+
+  const handleResumeFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setResumeFile(file);
+    setUploadingResume(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'resume');
+
+      const response = await fetch('/api/students/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload resume');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({
+        ...prev,
+        resumeText: data.text,
+        resumeUrl: data.url,
+      }));
+    } catch (error) {
+      console.error('Error uploading resume:', error);
+      alert('Failed to upload resume. Please try again.');
+    } finally {
+      setUploadingResume(false);
+    }
+  };
+
+  const handleTranscriptFileChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setTranscriptFile(file);
+    setUploadingTranscript(true);
+
+    try {
+      const formData = new FormData();
+      formData.append('file', file);
+      formData.append('type', 'transcript');
+
+      const response = await fetch('/api/students/upload', {
+        method: 'POST',
+        body: formData,
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to upload transcript');
+      }
+
+      const data = await response.json();
+      setFormData(prev => ({
+        ...prev,
+        transcriptText: data.text,
+        transcriptUrl: data.url,
+      }));
+    } catch (error) {
+      console.error('Error uploading transcript:', error);
+      alert('Failed to upload transcript. Please try again.');
+    } finally {
+      setUploadingTranscript(false);
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -148,20 +225,65 @@ export default function StudentOnboardPage() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
-                  About You (Resume, Skills, Interests)
+                  Resume
                 </label>
                 <p className="text-sm text-gray-500 mb-2">
-                  Paste your resume text, skills, or describe your interests. Our AI
-                  will extract relevant topics.
+                  Upload your resume (PDF, DOCX, or TXT) or paste the text below
                 </p>
+                <div className="mb-3">
+                  <input
+                    type="file"
+                    accept=".pdf,.docx,.txt"
+                    onChange={handleResumeFileChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  {uploadingResume && (
+                    <p className="text-sm text-primary-600 mt-2">Uploading and extracting text...</p>
+                  )}
+                  {resumeFile && !uploadingResume && (
+                    <p className="text-sm text-green-600 mt-2">✓ {resumeFile.name} uploaded</p>
+                  )}
+                </div>
                 <textarea
                   value={formData.resumeText}
                   onChange={(e) =>
                     setFormData({ ...formData, resumeText: e.target.value })
                   }
-                  rows={8}
+                  rows={6}
+                  placeholder="Or paste your resume text here..."
                   className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
-                  placeholder="I'm interested in AI, healthcare, and startups. I have experience with Python, machine learning, and data science. Previously worked at..."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Transcript (Optional)
+                </label>
+                <p className="text-sm text-gray-500 mb-2">
+                  Upload your transcript for better academic interest matching
+                </p>
+                <div className="mb-3">
+                  <input
+                    type="file"
+                    accept=".pdf,.docx,.txt"
+                    onChange={handleTranscriptFileChange}
+                    className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
+                  />
+                  {uploadingTranscript && (
+                    <p className="text-sm text-primary-600 mt-2">Uploading and extracting text...</p>
+                  )}
+                  {transcriptFile && !uploadingTranscript && (
+                    <p className="text-sm text-green-600 mt-2">✓ {transcriptFile.name} uploaded</p>
+                  )}
+                </div>
+                <textarea
+                  value={formData.transcriptText}
+                  onChange={(e) =>
+                    setFormData({ ...formData, transcriptText: e.target.value })
+                  }
+                  rows={4}
+                  placeholder="Or paste your transcript/coursework here..."
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent"
                 />
               </div>
 
