@@ -368,9 +368,17 @@ export default function CampaignBuilder() {
                         <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{eventDescription || "Your event description will appear here."}</p>
                       </div>
                       
-                      <Button className="w-full h-12 text-lg font-medium rounded-xl shadow-lg mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
-                        RSVP
-                      </Button>
+                      <div className="grid grid-cols-3 gap-2 mt-4">
+                        <Button className="h-12 font-medium rounded-xl shadow-md bg-primary hover:bg-primary/90 text-primary-foreground">
+                          RSVP
+                        </Button>
+                        <Button variant="outline" className="h-12 font-medium rounded-xl shadow-sm bg-background border-border/50">
+                          Maybe
+                        </Button>
+                        <Button variant="outline" className="h-12 font-medium rounded-xl shadow-sm bg-background border-border/50 text-muted-foreground px-0">
+                          Not Interested
+                        </Button>
+                      </div>
                     </CardContent>
                   </Card>
                 </div>
