@@ -10,12 +10,15 @@ import Students from "@/pages/students";
 import Events from "@/pages/events";
 import CampaignBuilder from "@/pages/campaign-builder";
 
+import EventDetails from "@/pages/event-details";
+
 function Router() {
   return (
     <Switch>
       <Route path="/" component={Dashboard}/>
       <Route path="/students" component={Students}/>
       <Route path="/events" component={Events}/>
+      <Route path="/events/:id" component={EventDetails}/>
       <Route path="/campaigns/new" component={CampaignBuilder}/>
       <Route component={NotFound} />
     </Switch>

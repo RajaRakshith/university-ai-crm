@@ -4,6 +4,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Search, Plus, Calendar, MapPin, Users } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Link } from "wouter";
 
 export default function Events() {
   return (
@@ -59,7 +60,9 @@ export default function Events() {
                 
                 <div className="pt-4 border-t border-border/50 flex justify-between items-center">
                   <span className="text-xs font-medium text-muted-foreground">0 Campaigns</span>
-                  <Button variant="secondary" size="sm">Manage</Button>
+                  <Link href={`/events/${event.id}`}>
+                    <Button variant="secondary" size="sm">Manage</Button>
+                  </Link>
                 </div>
               </CardContent>
             </Card>
