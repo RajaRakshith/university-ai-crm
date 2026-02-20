@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CenterIQ — University CRM</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,400&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  /* ─── Ofspace-extracted palette ─── */
+  :root {
+    /* backgrounds */
+    --bg-base:    #e8edf5;   /* icy blue page bg */
+    --bg-sidebar: #f0f4fb;   /* slightly lighter sidebar */
+    --bg-card:    #ffffff;   /* white panels */
+    --bg-hover:   #f5f7fc;   /* hover state */
+    --bg-input:   #f5f7fc;
+
+    /* borders */
+    --border:     #e2e8f0;
+    --border-mid: #cdd5e0;
+
+    /* accent — chartreuse / yellow-green */
+    --lime:       #c8f135;
+    --lime-dark:  #a8d41a;
+    --lime-lo:    rgba(200,241,53,0.25);
+
+    /* semantic */
+    --green:      #22c55e;
+    --green-lo:   rgba(34,197,94,0.12);
+    --green-text: #16a34a;
+
+    --red:        #f87171;
+    --red-lo:     rgba(248,113,113,0.12);
+    --red-text:   #dc2626;
+
+    --blue:       #6366f1;   /* indigo, used sparingly */
+    --blue-lo:    rgba(99,102,241,0.10);
+    --blue-text:  #4f46e5;
+
+    --amber:      #f59e0b;
+    --amber-lo:   rgba(245,158,11,0.12);
+    --amber-text: #b45309;
+
+    --purple:     #a855f7;
+    --purple-lo:  rgba(168,85,247,0.10);
+    --purple-text:#7c3aed;
+
+    /* typography */
+    --t1:  #0f1117;   /* near-black */
+    --t2:  #6b7280;   /* secondary */
+    --t3:  #9ca3af;   /* muted */
+    --t4:  #c6cdd8;   /* very muted */
+
+    /* sidebar active bg */
+    --nav-active-bg: #e8efff;
+    --nav-active-tx: #4338ca;
+
+    --rsm: 6px;
+    --r:   10px;
+    --rlg: 14px;
+  }
+
+  *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg-base);
+    color: var(--t1);
+    height: 100vh;
+    display: flex;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ══════════════ SIDEBAR ══════════════ */
+  .sidebar {
+    width: 216px;
+    background: var(--bg-sidebar);
+    border-right: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+
+  .logo-row {
+    padding: 17px 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .logo-mark {
+    width: 27px; height: 27px;
+    background: var(--t1);
+    border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 11px; font-weight: 700; color: #fff;
+    letter-spacing: -0.3px;
+    flex-shrink: 0;
+  }
+  .logo-name {
+    font-size: 13.5px; font-weight: 700;
+    color: var(--t1); letter-spacing: -0.4px;
+  }
+  .logo-name em { font-style: normal; color: var(--blue-text); }
+
+  .nav-section { padding: 14px 8px 4px; }
+  .nav-label {
+    font-size: 9.5px; font-weight: 600;
+    letter-spacing: 0.09em; text-transform: uppercase;
+    color: var(--t4); padding: 0 6px; margin-bottom: 3px;
+  }
+  .nav-item {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px;
+    border-radius: var(--rsm);
+    cursor: pointer;
+    color: var(--t2);
+    font-size: 12.5px; font-weight: 400;
+    transition: background 0.12s, color 0.12s;
+    position: relative;
+    user-select: none;
+  }
+  .nav-item:hover { background: var(--bg-hover); color: var(--t1); }
+  .nav-item.active {
+    background: var(--nav-active-bg);
+    color: var(--nav-active-tx);
+    font-weight: 600;
+  }
+  .nav-item.active::before {
+    content: '';
+    position: absolute; left: 0; top: 20%; bottom: 20%;
+    width: 2.5px; background: var(--blue-text); border-radius: 2px;
+  }
+  .nav-icon {
+    width: 16px; height: 16px; flex-shrink: 0;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .nav-icon svg { width: 14px; height: 14px; stroke: currentColor; fill: none; stroke-width: 1.7; stroke-linecap: round; stroke-linejoin: round; }
+  .nav-badge {
+    margin-left: auto;
+    font-size: 9.5px; font-weight: 700;
+    background: var(--t1); color: #fff;
+    padding: 1px 6px; border-radius: 99px;
+  }
+
+  .sidebar-foot {
+    margin-top: auto;
+    padding: 10px 8px;
+    border-top: 1px solid var(--border);
+  }
+  .user-row {
+    display: flex; align-items: center; gap: 8px;
+    padding: 7px 8px; border-radius: var(--rsm); cursor: pointer;
+  }
+  .user-row:hover { background: var(--bg-hover); }
+  .user-av {
+    width: 27px; height: 27px; border-radius: 50%;
+    background: var(--t1);
+    font-size: 10px; font-weight: 700; color: #fff;
+    display: flex; align-items: center; justify-content: center;
+    flex-shrink: 0;
+  }
+  .user-name { font-size: 12px; font-weight: 600; color: var(--t1); }
+  .user-role { font-size: 10px; color: var(--t3); }
+
+  /* ══════════════ MAIN ══════════════ */
+  .main { flex: 1; overflow-y: auto; display: flex; flex-direction: column; }
+
+  .topbar {
+    display: flex; align-items: center; gap: 10px;
+    padding: 12px 22px;
+    border-bottom: 1px solid var(--border);
+    background: var(--bg-sidebar);
+    position: sticky; top: 0; z-index: 10;
+  }
+  .topbar-left { display: flex; flex-direction: column; }
+  .topbar-title { font-size: 13.5px; font-weight: 700; color: var(--t1); letter-spacing: -0.3px; }
+  .topbar-crumb { font-size: 11px; color: var(--t3); margin-top: 1px; }
+  .topbar-right { margin-left: auto; display: flex; gap: 7px; align-items: center; }
+
+  .search {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rsm);
+    padding: 6px 12px;
+    display: flex; align-items: center; gap: 6px;
+    color: var(--t3); font-size: 11.5px; width: 200px;
+    cursor: text; transition: border-color 0.15s;
+  }
+  .search:hover { border-color: var(--border-mid); }
+  .search svg { width: 12px; height: 12px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+  .btn {
+    padding: 6px 14px;
+    border-radius: var(--rsm);
+    font-size: 12px; font-weight: 600;
+    cursor: pointer; border: none;
+    font-family: 'DM Sans', sans-serif;
+    display: flex; align-items: center; gap: 5px;
+    transition: all 0.12s;
+    white-space: nowrap;
+  }
+  .btn-ghost {
+    background: var(--bg-card); color: var(--t2);
+    border: 1px solid var(--border);
+  }
+  .btn-ghost:hover { background: var(--bg-hover); color: var(--t1); border-color: var(--border-mid); }
+  .btn-primary {
+    background: var(--lime); color: var(--t1);
+    border: 1px solid var(--lime-dark);
+  }
+  .btn-primary:hover { background: var(--lime-dark); }
+
+  /* ══════════════ CONTENT ══════════════ */
+  .content { padding: 20px 22px; flex: 1; }
+
+  /* stat grid */
+  .stat-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin-bottom: 16px;
+  }
+  .stat-card {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rlg);
+    padding: 17px 19px;
+    transition: box-shadow 0.15s, transform 0.15s;
+    cursor: default;
+    animation: fadeUp 0.3s ease both;
+  }
+  .stat-card:nth-child(1){animation-delay:.04s}
+  .stat-card:nth-child(2){animation-delay:.08s}
+  .stat-card:nth-child(3){animation-delay:.12s}
+  .stat-card:nth-child(4){animation-delay:.16s}
+  .stat-card:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.06); transform: translateY(-1px); }
+
+  .stat-top {
+    display: flex; align-items: center; justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  .stat-label {
+    font-size: 10.5px; font-weight: 600; letter-spacing: 0.05em;
+    text-transform: uppercase; color: var(--t3);
+  }
+  .stat-icon {
+    width: 26px; height: 26px; border-radius: 7px;
+    display: flex; align-items: center; justify-content: center;
+  }
+  .stat-icon svg { width: 13px; height: 13px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+
+  .stat-value {
+    font-size: 27px; font-weight: 700; letter-spacing: -1px; line-height: 1;
+    margin-bottom: 5px; color: var(--t1);
+  }
+  .stat-sub { font-size: 10.5px; color: var(--t3); display: flex; align-items: center; gap: 3px; }
+  .up   { color: var(--green-text); font-weight: 600; }
+  .down { color: var(--red-text);   font-weight: 600; }
+
+  /* icon color variants */
+  .ic-blue   { background: var(--blue-lo);   color: var(--blue-text); }
+  .ic-green  { background: var(--green-lo);  color: var(--green-text); }
+  .ic-amber  { background: var(--amber-lo);  color: var(--amber-text); }
+  .ic-purple { background: var(--purple-lo); color: var(--purple-text); }
+
+  /* ── two-col ── */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 320px;
+    gap: 14px;
+    margin-bottom: 14px;
+  }
+
+  /* panel */
+  .panel {
+    background: var(--bg-card);
+    border: 1px solid var(--border);
+    border-radius: var(--rlg);
+    overflow: hidden;
+  }
+  .panel-hd {
+    display: flex; align-items: center; gap: 6px;
+    padding: 13px 17px;
+    border-bottom: 1px solid var(--border);
+  }
+  .panel-title { font-size: 13px; font-weight: 700; color: var(--t1); letter-spacing: -0.2px; }
+  .panel-sub { font-size: 11px; color: var(--t3); }
+  .panel-actions { margin-left: auto; display: flex; gap: 5px; }
+
+  /* table */
+  .tbl-row {
+    display: grid;
+    grid-template-columns: 2fr 90px 60px 60px 60px 1fr 70px;
+    align-items: center;
+    padding: 10px 17px;
+    border-bottom: 1px solid var(--border);
+    gap: 10px;
+    cursor: pointer;
+    transition: background 0.1s;
+  }
+  .tbl-row:last-child { border-bottom: none; }
+  .tbl-row:hover { background: var(--bg-hover); }
+  .tbl-row.hdr {
+    font-size: 9.5px; font-weight: 600; letter-spacing: 0.08em;
+    text-transform: uppercase; color: var(--t3); cursor: default;
+    background: var(--bg-base);
+  }
+  .tbl-row.hdr:hover { background: var(--bg-base); }
+
+  .c-name { font-size: 12.5px; font-weight: 600; color: var(--t1); }
+  .c-event { font-size: 10.5px; color: var(--t3); margin-top: 2px; }
+  .cell   { font-size: 12px; color: var(--t2); }
+  .cell-b { font-size: 12.5px; font-weight: 600; color: var(--t1); }
+
+  /* badges */
+  .badge {
+    display: inline-flex; align-items: center; gap: 4px;
+    padding: 2px 8px; border-radius: 99px;
+    font-size: 9.5px; font-weight: 700; letter-spacing: 0.04em;
+    text-transform: uppercase;
+  }
+  .badge::before { content:''; width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+  .badge.running   { background: #dcfce7; color: var(--green-text); }   .badge.running::before   { background: var(--green); }
+  .badge.scheduled { background: #e0e7ff; color: var(--blue-text); }    .badge.scheduled::before { background: var(--blue); }
+  .badge.done      { background: #f3e8ff; color: var(--purple-text); }  .badge.done::before      { background: var(--purple); }
+
+  /* progress */
+  .progress-wrap  { display:flex; align-items:center; gap:6px; }
+  .progress-bar   { flex:1; height:3px; background: var(--border); border-radius:2px; overflow:hidden; }
+  .progress-fill  { height:100%; border-radius:2px; }
+  .pf-green { background: var(--green); }
+  .pf-blue  { background: var(--blue); }
+  .pf-amber { background: var(--amber); }
+  .progress-label { font-size:10px; color:var(--t3); white-space:nowrap; font-family:'DM Mono',monospace; }
+
+  /* student rows */
+  .s-row {
+    display:flex; align-items:center; gap:10px;
+    padding:10px 17px; border-bottom:1px solid var(--border);
+    cursor:pointer; transition:background 0.1s;
+  }
+  .s-row:last-child { border-bottom:none; }
+  .s-row:hover { background: var(--bg-hover); }
+
+  .s-av {
+    width:30px; height:30px; border-radius:8px;
+    font-size:10.5px; font-weight:700; color:#fff;
+    display:flex; align-items:center; justify-content:center;
+    flex-shrink:0;
+  }
+  .s-name { font-size:12px; font-weight:600; color:var(--t1); }
+  .s-prog { font-size:10px; color:var(--t3); margin-top:1px; }
+  .s-tags { display:flex; gap:3px; flex-wrap:wrap; margin-top:4px; }
+  .tag {
+    font-size:9px; font-weight:700; padding:1px 6px;
+    border-radius:3px; letter-spacing:0.04em; text-transform:uppercase;
+  }
+  .tag.blue   { background: #e0e7ff; color: var(--blue-text); }
+  .tag.green  { background: #dcfce7; color: var(--green-text); }
+  .tag.purple { background: #f3e8ff; color: var(--purple-text); }
+  .tag.amber  { background: #fef3c7; color: var(--amber-text); }
+
+  .s-score { margin-left:auto; text-align:right; flex-shrink:0; }
+  .score-n {
+    font-size:14px; font-weight:700; color:var(--t1);
+    font-family:'DM Mono',monospace;
+  }
+  .score-l { font-size:9px; color:var(--t3); text-transform:uppercase; letter-spacing:0.05em; }
+
+  /* activity */
+  .act-item {
+    display:flex; align-items:flex-start; gap:10px;
+    padding:10px 17px; border-bottom:1px solid var(--border); font-size:12px;
+  }
+  .act-item:last-child { border-bottom:none; }
+  .act-dot { width:6px; height:6px; border-radius:50%; margin-top:5px; flex-shrink:0; }
+  .act-txt  { color:var(--t2); line-height:1.5; }
+  .act-txt b{ color:var(--t1); font-weight:600; }
+  .act-time { font-size:10px; color:var(--t4); margin-top:1px; }
+
+  /* node map */
+  .node-canvas {
+    position:relative; height:158px;
+    background: var(--bg-base);
+    overflow:hidden;
+  }
+  .node-canvas svg { position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; }
+  .node-box {
+    position:absolute;
+    background: var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--rsm);
+    padding:5px 11px;
+    font-size:11px; font-weight:600; color:var(--t1);
+    cursor:pointer;
+    transition:border-color 0.15s, box-shadow 0.15s, transform 0.15s;
+    white-space:nowrap;
+    display:flex; align-items:center; gap:5px;
+    user-select:none;
+  }
+  .node-box:hover {
+    border-color: var(--border-mid);
+    box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+    transform:scale(1.04);
+  }
+  .node-box.hi {
+    background: var(--t1);
+    border-color: var(--t1);
+    color: #fff;
+    font-weight:700;
+  }
+  .n-dot   { width:5px; height:5px; border-radius:50%; flex-shrink:0; }
+  .n-count { font-size:9px; color:var(--t4); margin-left:2px; font-family:'DM Mono',monospace; }
+  .node-box.hi .n-count { color:rgba(255,255,255,0.5); }
+
+  /* scrollbar */
+  ::-webkit-scrollbar { width:4px; }
+  ::-webkit-scrollbar-track { background:transparent; }
+  ::-webkit-scrollbar-thumb { background:var(--border-mid); border-radius:2px; }
+
+  @keyframes fadeUp {
+    from { opacity:0; transform:translateY(6px); }
+    to   { opacity:1; transform:translateY(0); }
+  }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<nav class="sidebar">
+  <div class="logo-row">
+    <div class="logo-mark">CI</div>
+    <div class="logo-name">Center<em>IQ</em></div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Workspace</div>
+    <div class="nav-item active">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/></svg></span>
+      Dashboard
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></span>
+      Campaigns
+      <span class="nav-badge">4</span>
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+      Students
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></span>
+      Events
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Analytics</div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></span>
+      Insights
+    </div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 8v4l3 3"/></svg></span>
+      Segments
+    </div>
+  </div>
+
+  <div class="nav-section">
+    <div class="nav-label">Config</div>
+    <div class="nav-item">
+      <span class="nav-icon"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.07 4.93l-1.41 1.41M4.93 4.93l1.41 1.41M12 2v2M12 20v2M2 12h2M20 12h2M17.66 17.66l1.41 1.41M4.93 19.07l1.41-1.41"/></svg></span>
+      Settings
+    </div>
+  </div>
+
+  <div class="sidebar-foot">
+    <div class="user-row">
+      <div class="user-av">SC</div>
+      <div>
+        <div class="user-name">Sarah Chen</div>
+        <div class="user-role">Center Manager · Ross</div>
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div class="topbar-left">
+      <div class="topbar-title">Dashboard</div>
+      <div class="topbar-crumb">Ross School of Business · Career Development</div>
+    </div>
+    <div class="topbar-right">
+      <div class="search">
+        <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        Search students, events...
+      </div>
+      <button class="btn btn-ghost">Import</button>
+      <button class="btn btn-primary">+ New Campaign</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- stat cards -->
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Students</div>
+          <div class="stat-icon ic-blue"><svg viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg></div>
+        </div>
+        <div class="stat-value">1,842</div>
+        <div class="stat-sub"><span class="up">+124</span>&nbsp;this semester</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Active Campaigns</div>
+          <div class="stat-icon ic-green"><svg viewBox="0 0 24 24"><path d="M22 3H2l8 9.46V19l4 2v-8.54L22 3z"/></svg></div>
+        </div>
+        <div class="stat-value">4</div>
+        <div class="stat-sub"><span class="up">+2</span>&nbsp;vs last month</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Upcoming Events</div>
+          <div class="stat-icon ic-amber"><svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+        </div>
+        <div class="stat-value">11</div>
+        <div class="stat-sub">Next: <b style="color:var(--t1);font-weight:600">AI Summit</b> in 3d</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-top">
+          <div class="stat-label">Avg Conversion</div>
+          <div class="stat-icon ic-purple"><svg viewBox="0 0 24 24"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg></div>
+        </div>
+        <div class="stat-value">34%</div>
+        <div class="stat-sub"><span class="up">+6pp</span>&nbsp;vs last semester</div>
+      </div>
+    </div>
+
+    <!-- two-col -->
+    <div class="two-col">
+
+      <!-- campaigns table -->
+      <div class="panel">
+        <div class="panel-hd">
+          <div class="panel-title">Active Campaigns</div>
+          <div class="panel-sub">— 4 running</div>
+          <div class="panel-actions">
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;">Filter</button>
+            <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;">All campaigns</button>
+          </div>
+        </div>
+
+        <div class="tbl-row hdr">
+          <span>Campaign</span><span>Status</span><span>Targeted</span>
+          <span>Opened</span><span>Signups</span><span>Goal progress</span><span></span>
+        </div>
+
+        <div class="tbl-row">
+          <div>
+            <div class="c-name">AI/ML Winter Summit</div>
+            <div class="c-event">Feb 24 · Ross Auditorium</div>
+          </div>
+          <span class="badge running">Running</span>
+          <div class="cell-b">284</div>
+          <div class="cell">182 <span style="font-size:10px;color:var(--t4)">(64%)</span></div>
+          <div class="cell-b">63</div>
+          <div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill pf-green" style="width:63%"></div></div><div class="progress-label">63 / 100</div></div></div>
+          <button class="btn btn-ghost" style="padding:3px 9px;font-size:11px;">View</button>
+        </div>
+
+        <div class="tbl-row">
+          <div>
+            <div class="c-name">Consulting Recruiting Prep</div>
+            <div class="c-event">Mar 1 · Virtual</div>
+          </div>
+          <span class="badge running">Running</span>
+          <div class="cell-b">156</div>
+          <div class="cell">88 <span style="font-size:10px;color:var(--t4)">(56%)</span></div>
+          <div class="cell-b">31</div>
+          <div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill pf-amber" style="width:41%"></div></div><div class="progress-label">31 / 75</div></div></div>
+          <button class="btn btn-ghost" style="padding:3px 9px;font-size:11px;">View</button>
+        </div>
+
+        <div class="tbl-row">
+          <div>
+            <div class="c-name">Fintech Innovation Panel</div>
+            <div class="c-event">Mar 8 · Bloomberg Lab</div>
+          </div>
+          <span class="badge scheduled">Scheduled</span>
+          <div class="cell-b">210</div>
+          <div class="cell">—</div>
+          <div class="cell">—</div>
+          <div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill pf-blue" style="width:0%"></div></div><div class="progress-label">0 / 60</div></div></div>
+          <button class="btn btn-ghost" style="padding:3px 9px;font-size:11px;">Edit</button>
+        </div>
+
+        <div class="tbl-row">
+          <div>
+            <div class="c-name">Startup Founder Fireside</div>
+            <div class="c-event">Jan 18 · Zell Loft</div>
+          </div>
+          <span class="badge done">Completed</span>
+          <div class="cell-b">190</div>
+          <div class="cell">141 <span style="font-size:10px;color:var(--t4)">(74%)</span></div>
+          <div class="cell-b">88</div>
+          <div><div class="progress-wrap"><div class="progress-bar"><div class="progress-fill pf-green" style="width:100%"></div></div><div class="progress-label">88 / 80</div></div></div>
+          <button class="btn btn-ghost" style="padding:3px 9px;font-size:11px;">Report</button>
+        </div>
+      </div>
+
+      <!-- right col -->
+      <div style="display:flex;flex-direction:column;gap:12px;">
+
+        <!-- top matched students -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-title">Top Matches</div>
+            <div class="panel-sub">— AI Summit</div>
+            <div class="panel-actions">
+              <button class="btn btn-ghost" style="padding:3px 9px;font-size:10.5px;">See all</button>
+            </div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-av" style="background:#3730a3">AK</div>
+            <div style="flex:1;min-width:0">
+              <div class="s-name">Aisha Kim</div>
+              <div class="s-prog">MBA '25 · Full-time</div>
+              <div class="s-tags"><span class="tag blue">AI/ML</span><span class="tag green">Entrepreneurship</span></div>
+            </div>
+            <div class="s-score"><div class="score-n">97</div><div class="score-l">match</div></div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-av" style="background:#6d28d9">JL</div>
+            <div style="flex:1;min-width:0">
+              <div class="s-name">James Liu</div>
+              <div class="s-prog">MBA '26 · Full-time</div>
+              <div class="s-tags"><span class="tag blue">AI/ML</span><span class="tag purple">Consulting</span></div>
+            </div>
+            <div class="s-score"><div class="score-n">94</div><div class="score-l">match</div></div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-av" style="background:#15803d">PR</div>
+            <div style="flex:1;min-width:0">
+              <div class="s-name">Priya Raj</div>
+              <div class="s-prog">MBA '25 · Full-time</div>
+              <div class="s-tags"><span class="tag blue">AI/ML</span><span class="tag amber">Fintech</span></div>
+            </div>
+            <div class="s-score"><div class="score-n">91</div><div class="score-l">match</div></div>
+          </div>
+
+          <div class="s-row">
+            <div class="s-av" style="background:#b45309">MJ</div>
+            <div style="flex:1;min-width:0">
+              <div class="s-name">Marcus Johnson</div>
+              <div class="s-prog">MBA '26 · Part-time</div>
+              <div class="s-tags"><span class="tag blue">AI/ML</span><span class="tag green">Healthcare</span></div>
+            </div>
+            <div class="s-score"><div class="score-n">88</div><div class="score-l">match</div></div>
+          </div>
+        </div>
+
+        <!-- activity -->
+        <div class="panel">
+          <div class="panel-hd">
+            <div class="panel-title">Recent Activity</div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--green)"></div>
+            <div><div class="act-txt"><b>63 students</b> signed up for AI Summit</div><div class="act-time">2 min ago</div></div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--blue)"></div>
+            <div><div class="act-txt"><b>Fintech Panel</b> campaign scheduled — 210 targeted</div><div class="act-time">1 hr ago</div></div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--purple)"></div>
+            <div><div class="act-txt"><b>Aisha Kim</b> interest profile updated · AI/ML</div><div class="act-time">3 hrs ago</div></div>
+          </div>
+          <div class="act-item">
+            <div class="act-dot" style="background:var(--amber)"></div>
+            <div><div class="act-txt"><b>Startup Fireside</b> completed · Goal exceeded 88/80</div><div class="act-time">Yesterday</div></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- interest segment map -->
+    <div class="panel" style="margin-bottom:0">
+      <div class="panel-hd">
+        <div class="panel-title">Interest Segment Map</div>
+        <div class="panel-sub">— inferred from resume · clubs · classes</div>
+        <div class="panel-actions">
+          <button class="btn btn-ghost" style="padding:4px 10px;font-size:11px;">Open full map</button>
+        </div>
+      </div>
+      <div class="node-canvas">
+        <svg id="lines" xmlns="http://www.w3.org/2000/svg"></svg>
+
+        <div class="node-box hi" id="n0" style="left:50%;top:50%;transform:translate(-50%,-50%);font-size:12px;padding:8px 16px;">
+          Ross MBA '25–'26
+          <span class="n-count">1,842</span>
+        </div>
+        <div class="node-box" id="n1" style="left:11%;top:18%">
+          <div class="n-dot" style="background:#6366f1"></div>
+          AI / ML <span class="n-count">384</span>
+        </div>
+        <div class="node-box" id="n2" style="left:67%;top:12%">
+          <div class="n-dot" style="background:#a855f7"></div>
+          Consulting <span class="n-count">512</span>
+        </div>
+        <div class="node-box" id="n3" style="left:81%;top:52%">
+          <div class="n-dot" style="background:#f59e0b"></div>
+          Fintech <span class="n-count">298</span>
+        </div>
+        <div class="node-box" id="n4" style="left:58%;top:78%">
+          <div class="n-dot" style="background:#22c55e"></div>
+          Entrepreneurship <span class="n-count">231</span>
+        </div>
+        <div class="node-box" id="n5" style="left:18%;top:74%">
+          <div class="n-dot" style="background:#22c55e"></div>
+          Healthcare <span class="n-count">189</span>
+        </div>
+        <div class="node-box" id="n6" style="left:2%;top:48%">
+          <div class="n-dot" style="background:#6366f1"></div>
+          Sustainability <span class="n-count">144</span>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  function drawLines() {
+    const svg = document.getElementById('lines');
+    const canvas = svg.parentElement;
+    const rect = canvas.getBoundingClientRect();
+    const c0 = document.getElementById('n0').getBoundingClientRect();
+    const cx = c0.left - rect.left + c0.width / 2;
+    const cy = c0.top  - rect.top  + c0.height / 2;
+    svg.innerHTML = '';
+    const nodes  = ['n1','n2','n3','n4','n5','n6'];
+    const colors = ['#6366f1','#a855f7','#f59e0b','#22c55e','#22c55e','#6366f1'];
+    nodes.forEach((id, i) => {
+      const er = document.getElementById(id).getBoundingClientRect();
+      const ex = er.left - rect.left + er.width  / 2;
+      const ey = er.top  - rect.top  + er.height / 2;
+      const l = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+      l.setAttribute('x1', cx); l.setAttribute('y1', cy);
+      l.setAttribute('x2', ex); l.setAttribute('y2', ey);
+      l.setAttribute('stroke', colors[i]);
+      l.setAttribute('stroke-width', '1.5');
+      l.setAttribute('stroke-opacity', '0.18');
+      l.setAttribute('stroke-dasharray', '3 4');
+      svg.appendChild(l);
+    });
+  }
+  setTimeout(drawLines, 80);
+  window.addEventListener('resize', drawLines);
+</script>
+</body>
+</html>
