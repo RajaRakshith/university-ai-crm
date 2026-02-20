@@ -3,6 +3,17 @@ import { MOCK_EVENTS, MOCK_STUDENTS } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Link, useRoute } from "wouter";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+  DialogFooter,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { 
   CalendarDays, 
   MapPin, 
@@ -129,9 +140,45 @@ export default function EventDetails() {
                       </a>
                     )}
                     {event.signupForm ? (
-                      <a href={event.signupForm} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400 transition-colors">
-                        <FileText className="w-4 h-4" /> Additional Signup Form
-                      </a>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <button className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400 transition-colors bg-transparent border-none p-0 cursor-pointer text-left">
+                            <FileText className="w-4 h-4" /> Additional Signup Form
+                          </button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Edit Additional Signup Form</DialogTitle>
+                            <DialogDescription>
+                              Update the variables and tracking tags for the external form.
+                            </DialogDescription>
+                          </DialogHeader>
+                          <div className="space-y-4 py-2">
+                            <div className="space-y-2">
+                              <Label>Form URL</Label>
+                              <Input defaultValue={event.signupForm} />
+                            </div>
+                            <div className="grid grid-cols-2 gap-4">
+                              <div className="space-y-2">
+                                <Label>UTM Source</Label>
+                                <Input defaultValue="university_crm" />
+                              </div>
+                              <div className="space-y-2">
+                                <Label>UTM Medium</Label>
+                                <Input defaultValue="email" />
+                              </div>
+                            </div>
+                            <div className="space-y-2">
+                              <Label>Custom Variables (URL Parameters)</Label>
+                              <Input defaultValue="?student_id={StudentId}&program={Program}" />
+                              <p className="text-xs text-muted-foreground">These variables will be automatically replaced with the student's actual data when they click the link.</p>
+                            </div>
+                          </div>
+                          <DialogFooter>
+                            <Button type="button">Save Configuration</Button>
+                          </DialogFooter>
+                        </DialogContent>
+                      </Dialog>
                     ) : (
                       <p className="text-sm text-muted-foreground italic flex items-center gap-2">
                         <FileText className="w-4 h-4 opacity-50" /> No external signup form required
