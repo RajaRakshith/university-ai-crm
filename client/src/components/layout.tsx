@@ -7,9 +7,8 @@ import {
   Settings, 
   Search,
   Bell,
-  Menu,
-  Moon,
-  Sun
+  Sun,
+  Moon
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -18,8 +17,7 @@ import { useState, useEffect } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [isDark, setIsDark] = useState(true); // Default to dark based on design inspiration
+  const [isDark, setIsDark] = useState(true);
 
   useEffect(() => {
     if (isDark) {
@@ -37,86 +35,76 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   ];
 
   return (
-    <div className="flex h-screen bg-background text-foreground selection:bg-primary selection:text-primary-foreground">
+    <div className="flex h-screen bg-background text-foreground">
       {/* Sidebar */}
-      <aside 
-        className={`${sidebarOpen ? 'w-64' : 'w-20'} hidden md:flex flex-col border-r border-border bg-sidebar/50 backdrop-blur-xl transition-all duration-300 z-20`}
-      >
-        <div className="p-6 flex items-center h-20 border-b border-transparent">
+      <aside className="w-64 hidden md:flex flex-col border-r border-border bg-sidebar shrink-0">
+        <div className="p-4 flex items-center h-16 border-b border-border">
           <Link href="/">
-            <a className="flex items-center gap-3 font-heading font-bold text-2xl text-foreground overflow-hidden whitespace-nowrap">
-              <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-xl">
+            <a className="flex items-center gap-3 font-heading font-bold text-lg text-foreground overflow-hidden whitespace-nowrap px-2">
+              <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-sm">
                 U
               </div>
-              {sidebarOpen && <span>UniConnect</span>}
+              <span>UniConnect</span>
             </a>
           </Link>
         </div>
 
-        <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-6 space-y-1.5 overflow-y-auto">
           {navigation.map((item) => {
             const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/');
             return (
               <Link key={item.name} href={item.href}>
-                <a className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
+                <a className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
                   isActive 
-                    ? 'bg-primary text-primary-foreground font-medium shadow-md' 
-                    : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
+                    ? 'bg-primary text-primary-foreground font-medium shadow-sm' 
+                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
                 }`}>
-                  <item.icon className="w-5 h-5 shrink-0" />
-                  {sidebarOpen && <span className="text-base">{item.name}</span>}
+                  <item.icon className={`w-4 h-4 shrink-0 ${isActive ? '' : 'text-muted-foreground'}`} />
+                  <span>{item.name}</span>
                 </a>
               </Link>
             )
           })}
         </nav>
 
-        <div className="p-4 border-t border-border/50 space-y-2">
+        <div className="p-4 border-t border-border space-y-1">
           <button 
             onClick={() => setIsDark(!isDark)}
-            className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors"
+            className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors text-sm"
           >
-            {isDark ? <Sun className="w-5 h-5 shrink-0" /> : <Moon className="w-5 h-5 shrink-0" />}
-            {sidebarOpen && <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>}
+            {isDark ? <Sun className="w-4 h-4 shrink-0 text-muted-foreground" /> : <Moon className="w-4 h-4 shrink-0 text-muted-foreground" />}
+            <span>{isDark ? 'Light Mode' : 'Dark Mode'}</span>
           </button>
           
-          <button className="flex items-center gap-3 px-3 py-2 w-full rounded-lg text-muted-foreground hover:bg-sidebar-accent hover:text-foreground transition-colors">
-            <Settings className="w-5 h-5 shrink-0" />
-            {sidebarOpen && <span>Settings</span>}
+          <button className="flex items-center gap-3 px-3 py-2.5 w-full rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors text-sm">
+            <Settings className="w-4 h-4 shrink-0 text-muted-foreground" />
+            <span>Settings</span>
           </button>
         </div>
       </aside>
 
       {/* Main Content */}
-      <main className="flex-1 flex flex-col min-w-0 overflow-hidden relative">
-        {/* Subtle background texture for dark mode depth */}
-        {isDark && (
-          <div className="absolute inset-0 opacity-[0.03] pointer-events-none" style={{ backgroundImage: 'url("data:image/svg+xml,%3Csvg viewBox=%220 0 200 200%22 xmlns=%22http://www.w3.org/2000/svg%22%3E%3Cfilter id=%22noiseFilter%22%3E%3CfeTurbulence type=%22fractalNoise%22 baseFrequency=%220.65%22 numOctaves=%223%22 stitchTiles=%22stitch%22/%3E%3C/filter%3E%3Crect width=%22100%25%22 height=%22100%25%22 filter=%22url(%23noiseFilter)%22/%3E%3C/svg%3E")' }}></div>
-        )}
+      <main className="flex-1 flex flex-col min-w-0 overflow-hidden bg-background">
         
         {/* Topbar */}
-        <header className="h-16 flex items-center justify-between px-4 sm:px-6 border-b border-border/50 bg-background/80 backdrop-blur-md z-10 sticky top-0">
-          <div className="flex items-center gap-4">
-            <Button variant="ghost" size="icon" className="md:hidden" onClick={() => setSidebarOpen(!sidebarOpen)}>
-              <Menu className="w-5 h-5" />
-            </Button>
-            
-            <div className="relative hidden sm:block w-64 lg:w-96">
+        <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-background z-10 sticky top-0">
+          <div className="flex items-center gap-4 flex-1">
+            <div className="relative hidden md:block w-full max-w-md">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 type="search" 
                 placeholder="Search students, campaigns." 
-                className="w-full bg-muted/40 pl-9 border-transparent focus-visible:ring-1 focus-visible:bg-background transition-all rounded-full h-9"
+                className="w-full bg-muted/30 pl-9 border-border focus-visible:ring-1 focus-visible:ring-ring transition-all rounded-full h-9 text-sm"
               />
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-4 shrink-0">
             <Button variant="ghost" size="icon" className="relative rounded-full text-muted-foreground hover:text-foreground">
-              <Bell className="w-5 h-5" />
-              <span className="absolute top-2 right-2 w-2 h-2 bg-primary rounded-full ring-2 ring-background"></span>
+              <Bell className="w-4 h-4" />
+              <span className="absolute top-1.5 right-1.5 w-1.5 h-1.5 bg-foreground rounded-full"></span>
             </Button>
-            <Avatar className="w-8 h-8 cursor-pointer ring-2 ring-transparent hover:ring-border transition-all shadow-sm">
+            <Avatar className="w-8 h-8 cursor-pointer ring-1 ring-border hover:ring-foreground transition-all">
               <AvatarImage src="https://i.pravatar.cc/150?u=a042581f4e29026024d" />
               <AvatarFallback>JD</AvatarFallback>
             </Avatar>
@@ -124,8 +112,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
 
         {/* Page Content */}
-        <div className="flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
-          <div className="max-w-6xl mx-auto">
+        <div className="flex-1 overflow-auto">
+          <div className="p-8">
             {children}
           </div>
         </div>
