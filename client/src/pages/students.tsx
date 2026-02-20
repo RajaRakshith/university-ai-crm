@@ -2,8 +2,9 @@ import { AppLayout } from "@/components/layout";
 import { MOCK_STUDENTS } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Download, FileText, History } from "lucide-react";
+import { Search, Filter, Download, FileText, History, CalendarDays } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 export default function Students() {
   return (
@@ -71,9 +72,47 @@ export default function Students() {
                       </div>
                     </td>
                     <td className="px-6 py-4 text-right">
-                      <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
-                        <History className="w-4 h-4" /> View History
-                      </Button>
+                      <Dialog>
+                        <DialogTrigger asChild>
+                          <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+                            <History className="w-4 h-4" /> View History
+                          </Button>
+                        </DialogTrigger>
+                        <DialogContent>
+                          <DialogHeader>
+                            <DialogTitle>Attendance History for {student.name}</DialogTitle>
+                          </DialogHeader>
+                          <div className="space-y-4 pt-4">
+                            <div className="flex gap-4 items-start pb-4 border-b border-border/50">
+                              <div className="bg-primary/10 p-2 rounded-lg text-primary mt-1">
+                                <CalendarDays className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium">AI & Tech Mixer</h4>
+                                <p className="text-sm text-muted-foreground">Attended • Oct 15, 2024</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-4 items-start pb-4 border-b border-border/50">
+                              <div className="bg-primary/10 p-2 rounded-lg text-primary mt-1">
+                                <CalendarDays className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium">Startup Career Fair</h4>
+                                <p className="text-sm text-muted-foreground">RSVP'd • Oct 20, 2024</p>
+                              </div>
+                            </div>
+                            <div className="flex gap-4 items-start pb-2">
+                              <div className="bg-muted p-2 rounded-lg text-muted-foreground mt-1">
+                                <CalendarDays className="w-4 h-4" />
+                              </div>
+                              <div>
+                                <h4 className="font-medium text-muted-foreground">Sustainable Consulting Case Comp</h4>
+                                <p className="text-sm text-muted-foreground">Opened Email • Nov 5, 2024</p>
+                              </div>
+                            </div>
+                          </div>
+                        </DialogContent>
+                      </Dialog>
                     </td>
                   </tr>
                 ))}
