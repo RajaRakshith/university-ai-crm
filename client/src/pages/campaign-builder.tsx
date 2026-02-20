@@ -73,20 +73,23 @@ export default function CampaignBuilder() {
             <p className="text-muted-foreground">Step {currentStep + 1} of {STEPS.length}</p>
           </div>
           
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2 overflow-x-auto pb-2 -mb-2">
             {STEPS.map((step, index) => (
-              <div key={step.id} className="flex items-center">
-                <div className={`w-8 h-8 rounded-full flex items-center justify-center text-sm font-medium transition-all ${
+              <div key={step.id} className="flex items-center group">
+                <div className={`w-10 h-10 rounded-full flex items-center justify-center text-sm font-medium transition-all duration-300 ${
                   index === currentStep 
-                    ? "bg-primary text-primary-foreground shadow-md ring-4 ring-primary/20" 
+                    ? "bg-primary text-primary-foreground shadow-lg ring-4 ring-primary/20 scale-110" 
                     : index < currentStep 
-                      ? "bg-primary text-primary-foreground" 
-                      : "bg-muted text-muted-foreground"
-                }`}>
-                  {index < currentStep ? <CheckCircle2 className="w-5 h-5" /> : index + 1}
+                      ? "bg-primary text-primary-foreground hover:bg-primary/90 cursor-pointer" 
+                      : "bg-muted text-muted-foreground border-2 border-transparent"
+                }`}
+                onClick={index < currentStep ? () => setCurrentStep(index) : undefined}
+                title={step.title}
+                >
+                  {index < currentStep ? <CheckCircle2 className="w-5 h-5" /> : <step.icon className={`w-4 h-4 ${index === currentStep ? 'animate-pulse' : ''}`} />}
                 </div>
                 {index < STEPS.length - 1 && (
-                  <div className={`w-8 h-1 mx-2 rounded-full ${index < currentStep ? "bg-primary" : "bg-muted"}`} />
+                  <div className={`w-10 h-1 mx-2 rounded-full transition-colors duration-300 ${index < currentStep ? "bg-primary" : "bg-muted"}`} />
                 )}
               </div>
             ))}
