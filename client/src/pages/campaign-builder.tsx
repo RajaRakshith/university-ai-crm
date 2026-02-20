@@ -39,6 +39,11 @@ export default function CampaignBuilder() {
   const [selectedEvent, setSelectedEvent] = useState(MOCK_EVENTS[0].id);
   const [targetSize, setTargetSize] = useState([100]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>(["AI/ML"]);
+  
+  const [selectedImage, setSelectedImage] = useState<string>("/images/preset-1.png");
+  const [eventTitle, setEventTitle] = useState("AI & Tech Mixer");
+  const [eventSubtitle, setEventSubtitle] = useState("Friday, October 24th @ 6:00 PM");
+  const [eventDescription, setEventDescription] = useState("Join us for an exclusive session where you can network with industry leaders, learn about the latest trends in AI, and meet other students building cool things.");
 
   const StepIcon = STEPS[currentStep].icon;
 
@@ -263,63 +268,112 @@ export default function CampaignBuilder() {
           )}
 
           {currentStep === 2 && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 animate-in slide-in-from-right-4 duration-300">
-              <div className="space-y-6">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 animate-in slide-in-from-right-4 duration-300">
+              <div className="lg:col-span-5 space-y-6">
                 <div className="flex justify-between items-center">
-                  <h3 className="text-xl font-medium">Craft your message</h3>
+                  <h3 className="text-xl font-medium">Design your event page</h3>
                   <Button variant="secondary" size="sm" className="gap-2">
                     <Sparkles className="w-4 h-4" /> AI Assist
                   </Button>
                 </div>
                 
-                <div className="space-y-4">
-                  <div className="space-y-2">
-                    <Label>Subject Line</Label>
-                    <Input defaultValue={`Special Invitation: ${MOCK_EVENTS.find(e => e.id === selectedEvent)?.name}`} className="font-medium bg-background"/>
+                <div className="space-y-6 bg-card border border-border/50 rounded-xl p-5 shadow-sm">
+                  <div className="space-y-3">
+                    <Label className="text-base">Cover Image</Label>
+                    <div className="grid grid-cols-2 gap-2 mt-2">
+                      {[1, 2, 3, 4].map(num => (
+                        <div 
+                          key={num}
+                          onClick={() => setSelectedImage(`/images/preset-${num}.png`)}
+                          className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all aspect-video ${selectedImage === \`/images/preset-\${num}.png\` ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-primary/50'}`}
+                        >
+                          <img src={`/images/preset-${num}.png`} alt={`Preset ${num}`} className="w-full h-full object-cover" />
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-border/50">
+                    <Label className="text-base">Title</Label>
+                    <Input 
+                      value={eventTitle} 
+                      onChange={(e) => setEventTitle(e.target.value)}
+                      className="font-medium bg-background text-lg"
+                      placeholder="e.g., Tech & AI Mixer"
+                    />
                   </div>
                   
-                  <div className="space-y-2">
+                  <div className="space-y-3 pt-4 border-t border-border/50">
+                    <Label className="text-base">Subtitle / Date</Label>
+                    <Input 
+                      value={eventSubtitle} 
+                      onChange={(e) => setEventSubtitle(e.target.value)}
+                      className="bg-background"
+                      placeholder="e.g., Friday, October 24th @ 6:00 PM"
+                    />
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-border/50">
                     <div className="flex justify-between items-center">
-                      <Label>Message Body</Label>
-                      <div className="flex gap-2">
-                        {['{FirstName}', '{InterestTag}', '{RelevantClub}'].map(variable => (
-                          <span key={variable} className="text-xs bg-muted text-muted-foreground px-2 py-1 rounded cursor-pointer hover:bg-primary/20 hover:text-primary transition-colors">
-                            {variable}
-                          </span>
-                        ))}
-                      </div>
+                      <Label className="text-base">Short Description</Label>
                     </div>
                     <Textarea 
-                      className="min-h-[250px] font-sans text-sm resize-none bg-background"
-                      defaultValue={`Hi {FirstName},\n\nBecause of your background in {InterestTag} and involvement with {RelevantClub}, we thought you'd be a perfect fit for our upcoming event.\n\nWe are hosting an exclusive session where you can network with industry leaders and learn about the latest trends.\n\nSpace is limited. Secure your spot below.\n\nBest,\nUniversity Center Team`}
+                      value={eventDescription}
+                      onChange={(e) => setEventDescription(e.target.value)}
+                      className="min-h-[120px] font-sans text-sm resize-none bg-background"
+                      placeholder="Tell people what the event is about..."
                     />
                   </div>
                 </div>
               </div>
 
-              <div>
+              <div className="lg:col-span-7">
                 <Label className="mb-2 block">Live Preview</Label>
-                <Card className="shadow-lg border-border/50 bg-background overflow-hidden relative">
-                  <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-primary to-primary/40"></div>
-                  <div className="p-4 border-b border-border/30 bg-muted/20 flex gap-4 text-sm">
-                    <div className="font-medium w-16 text-muted-foreground">From:</div>
-                    <div>University Center</div>
-                  </div>
-                  <div className="p-4 border-b border-border/30 bg-muted/20 flex gap-4 text-sm">
-                    <div className="font-medium w-16 text-muted-foreground">Subject:</div>
-                    <div className="font-semibold">Special Invitation: {MOCK_EVENTS.find(e => e.id === selectedEvent)?.name}</div>
-                  </div>
-                  <CardContent className="p-6 text-sm leading-relaxed space-y-4 font-sans">
-                    <p>Hi Sarah,</p>
-                    <p>Because of your background in <strong>AI/ML</strong> and involvement with <strong>AI Club</strong>, we thought you'd be a perfect fit for our upcoming event.</p>
-                    <p>We are hosting an exclusive session where you can network with industry leaders and learn about the latest trends.</p>
-                    <p>Space is limited. Secure your spot below.</p>
-                    
-                    <Button className="mt-4 shadow-md">RSVP Now</Button>
-                    
-                    <p className="text-muted-foreground pt-4">Best,<br/>University Center Team</p>
-                  </CardContent>
-                </Card>
+                <div className="flex items-center justify-center bg-muted/30 border border-border/50 rounded-xl p-4 sm:p-8 min-h-[600px] relative overflow-hidden">
+                  <div className="absolute inset-0 bg-gradient-to-br from-primary/5 to-transparent"></div>
+                  <Card className="w-full max-w-sm mx-auto shadow-2xl border-0 overflow-hidden bg-background rounded-2xl sm:rounded-[2rem] relative z-10 animate-in zoom-in-95 duration-500">
+                    <div className="w-full aspect-square relative bg-muted">
+                      {selectedImage ? (
+                        <img src={selectedImage} alt="Event Cover" className="w-full h-full object-cover" />
+                      ) : (
+                        <div className="w-full h-full flex items-center justify-center text-muted-foreground">Select an image</div>
+                      )}
+                      <div className="absolute top-4 right-4">
+                        <div className="w-10 h-10 bg-background/80 backdrop-blur-md rounded-full flex items-center justify-center shadow-sm">
+                          <Send className="w-5 h-5 text-foreground" />
+                        </div>
+                      </div>
+                    </div>
+                    <CardContent className="p-6 sm:p-8 space-y-6">
+                      <div className="space-y-2 text-center">
+                        <h2 className="text-2xl sm:text-3xl font-bold tracking-tight text-balance leading-tight">{eventTitle || "Your Event Title"}</h2>
+                        <p className="text-primary font-medium">{eventSubtitle || "Date & Time"}</p>
+                      </div>
+                      
+                      <div className="flex flex-col items-center gap-1 pt-2">
+                        <div className="flex -space-x-3 justify-center">
+                          {[1,2,3,4].map(i => (
+                            <div key={i} className="w-9 h-9 rounded-full border-2 border-background bg-secondary flex items-center justify-center text-xs font-medium text-secondary-foreground shadow-sm">
+                              {String.fromCharCode(64+i)}
+                            </div>
+                          ))}
+                          <div className="w-9 h-9 rounded-full border-2 border-background bg-muted flex items-center justify-center text-xs font-medium text-muted-foreground shadow-sm">
+                            +42
+                          </div>
+                        </div>
+                        <p className="text-center text-sm text-muted-foreground">46 people attending</p>
+                      </div>
+
+                      <div className="pt-4 border-t border-border/50">
+                        <p className="text-sm text-muted-foreground leading-relaxed whitespace-pre-wrap">{eventDescription || "Your event description will appear here."}</p>
+                      </div>
+                      
+                      <Button className="w-full h-12 text-lg font-medium rounded-xl shadow-lg mt-4 bg-primary hover:bg-primary/90 text-primary-foreground">
+                        RSVP
+                      </Button>
+                    </CardContent>
+                  </Card>
+                </div>
               </div>
             </div>
           )}
