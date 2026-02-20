@@ -1,7 +1,7 @@
 export const MOCK_EVENTS = [
-  { id: "1", name: "AI in Finance Panel", date: "Oct 12, 2024", capacity: 150, signups: 142, category: ["Finance", "AI"] },
-  { id: "2", name: "Startup Career Fair", date: "Oct 20, 2024", capacity: 500, signups: 320, category: ["Entrepreneurship", "Careers"] },
-  { id: "3", name: "Sustainable Consulting Case Comp", date: "Nov 5, 2024", capacity: 80, signups: 65, category: ["Consulting", "Sustainability"] },
+  { id: "1", name: "AI in Finance Panel", date: "Oct 12, 2024", capacity: 150, signups: 142, category: ["Finance", "AI"], description: "Join industry experts to discuss how Artificial Intelligence is reshaping the financial sector. Networking session to follow.", url: "https://finance-ai-panel.example.com", signupForm: "https://forms.example.com/ai-finance" },
+  { id: "2", name: "Startup Career Fair", date: "Oct 20, 2024", capacity: 500, signups: 320, category: ["Entrepreneurship", "Careers"], description: "Connect with over 50 fast-growing startups looking for top talent across engineering, design, and business roles.", url: "https://startup-fair.example.com", signupForm: null },
+  { id: "3", name: "Sustainable Consulting Case Comp", date: "Nov 5, 2024", capacity: 80, signups: 65, category: ["Consulting", "Sustainability"], description: "Work in teams to solve a real-world sustainability challenge for a major global corporation. Cash prizes for the winning teams.", url: "https://sustain-case-comp.example.com", signupForm: "https://forms.example.com/case-comp" },
 ];
 
 export const MOCK_STUDENTS = [

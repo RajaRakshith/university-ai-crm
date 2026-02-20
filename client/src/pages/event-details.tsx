@@ -10,7 +10,9 @@ import {
   ArrowLeft,
   Megaphone,
   Mail,
-  UserCheck
+  UserCheck,
+  Link as LinkIcon,
+  FileText
 } from "lucide-react";
 
 export default function EventDetails() {
@@ -103,6 +105,44 @@ export default function EventDetails() {
             </CardContent>
           </Card>
         </div>
+
+        {/* Event Details Section */}
+        <Card className="shadow-sm border-border bg-card">
+          <CardHeader className="bg-muted/10 border-b border-border/50">
+            <CardTitle className="text-base">Event Details</CardTitle>
+          </CardHeader>
+          <CardContent className="p-6">
+            <div className="grid md:grid-cols-2 gap-8">
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-1">Description</h4>
+                  <p className="text-sm leading-relaxed">{event.description || "No description provided."}</p>
+                </div>
+              </div>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="text-sm font-medium text-muted-foreground mb-2">Important Links</h4>
+                  <div className="space-y-2">
+                    {event.url && (
+                      <a href={event.url} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400 transition-colors">
+                        <LinkIcon className="w-4 h-4" /> Event Website
+                      </a>
+                    )}
+                    {event.signupForm ? (
+                      <a href={event.signupForm} target="_blank" rel="noreferrer" className="flex items-center gap-2 text-sm text-blue-500 hover:text-blue-400 transition-colors">
+                        <FileText className="w-4 h-4" /> Additional Signup Form
+                      </a>
+                    ) : (
+                      <p className="text-sm text-muted-foreground italic flex items-center gap-2">
+                        <FileText className="w-4 h-4 opacity-50" /> No external signup form required
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           {/* Campaigns Table */}
