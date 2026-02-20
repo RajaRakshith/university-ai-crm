@@ -9,16 +9,14 @@ import Dashboard from "@/pages/dashboard";
 import Students from "@/pages/students";
 import Events from "@/pages/events";
 import CampaignBuilder from "@/pages/campaign-builder";
-import Landing from "@/pages/landing";
 
 function Router() {
   return (
     <Switch>
-      <Route path="/" component={Landing}/>
-      <Route path="/app" component={Dashboard}/>
-      <Route path="/app/students" component={Students}/>
-      <Route path="/app/events" component={Events}/>
-      <Route path="/app/campaigns/new" component={CampaignBuilder}/>
+      <Route path="/" component={Dashboard}/>
+      <Route path="/students" component={Students}/>
+      <Route path="/events" component={Events}/>
+      <Route path="/campaigns/new" component={CampaignBuilder}/>
       <Route component={NotFound} />
     </Switch>
   );

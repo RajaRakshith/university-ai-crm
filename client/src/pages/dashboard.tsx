@@ -19,14 +19,14 @@ export default function Dashboard() {
             <h1 className="text-3xl font-bold font-heading tracking-tight mb-2">Overview</h1>
             <p className="text-muted-foreground">Monitor campaign performance and student engagement.</p>
           </div>
-          <Link href="/app/campaigns/new">
-            <Button className="shadow-md transition-all gap-2">
+          <Link href="/campaigns/new">
+            <Button className="shadow-md transition-all gap-2 bg-white text-black hover:bg-white/90">
               <Plus className="w-4 h-4"/> New Campaign
             </Button>
           </Link>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <MetricCard title="Total Students Reached" value="12,450" change="+12%" icon={Users} />
           <MetricCard title="Active Campaigns" value="8" change="+2" icon={Target} />
           <MetricCard title="Upcoming Events" value="14" change="Next 30 days" icon={CalendarDays} />
@@ -34,7 +34,7 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <Card className="col-span-2 shadow-sm border-border/50">
+          <Card className="col-span-3 shadow-sm border-border/50">
             <CardHeader className="bg-muted/10 border-b border-border/50">
               <CardTitle>Recent Campaigns</CardTitle>
             </CardHeader>
@@ -74,31 +74,6 @@ export default function Dashboard() {
               </table>
             </CardContent>
           </Card>
-          <Card className="shadow-sm border-border/50">
-            <CardHeader className="bg-muted/10 border-b border-border/50">
-              <CardTitle>Top Interests</CardTitle>
-            </CardHeader>
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {[
-                  { tag: "Consulting", pct: 35 },
-                  { tag: "Finance", pct: 28 },
-                  { tag: "AI/ML", pct: 22 },
-                  { tag: "Sustainability", pct: 15 },
-                ].map(interest => (
-                  <div key={interest.tag} className="space-y-1.5">
-                    <div className="flex justify-between text-sm">
-                      <span className="font-medium">{interest.tag}</span>
-                      <span className="text-muted-foreground">{interest.pct}%</span>
-                    </div>
-                    <div className="w-full bg-secondary h-2 rounded-full overflow-hidden">
-                      <div className="bg-primary h-full rounded-full" style={{width: `${interest.pct}%`}}/>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
         </div>
       </div>
     </AppLayout>
@@ -107,17 +82,17 @@ export default function Dashboard() {
 
 function MetricCard({ title, value, change, icon: Icon }: any) {
   return (
-    <Card className="shadow-sm border-border/50 hover:border-primary/30 transition-colors bg-card/50 backdrop-blur-sm">
-      <CardHeader className="flex flex-row items-center justify-between pb-2">
-        <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
-        <div className="p-2 bg-primary/10 rounded-lg">
-          <Icon className="h-4 w-4 text-primary" />
+    <Card className="shadow-sm border-border/50 hover:border-border/80 transition-colors bg-card/40 backdrop-blur-sm rounded-xl">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between mb-4">
+          <CardTitle className="text-sm font-medium text-muted-foreground">{title}</CardTitle>
+          <div className="p-2 bg-muted/20 border border-border/50 rounded-lg">
+            <Icon className="h-4 w-4 text-muted-foreground" />
+          </div>
         </div>
-      </CardHeader>
-      <CardContent>
-        <div className="text-3xl font-bold font-heading">{value}</div>
-        <p className="text-xs text-emerald-600 dark:text-emerald-400 font-medium mt-1">
-          {change} vs last month
+        <div className="text-4xl font-bold font-heading tracking-tight mb-2">{value}</div>
+        <p className="text-sm text-emerald-500 font-medium">
+          {change}
         </p>
       </CardContent>
     </Card>

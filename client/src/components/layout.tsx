@@ -30,10 +30,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
   }, [isDark]);
 
   const navigation = [
-    { name: "Dashboard", href: "/app", icon: BarChart3 },
-    { name: "Campaigns", href: "/app/campaigns/new", icon: Megaphone },
-    { name: "Students", href: "/app/students", icon: Users },
-    { name: "Events", href: "/app/events", icon: CalendarDays },
+    { name: "Dashboard", href: "/", icon: BarChart3 },
+    { name: "Campaigns", href: "/campaigns/new", icon: Megaphone },
+    { name: "Students", href: "/students", icon: Users },
+    { name: "Events", href: "/events", icon: CalendarDays },
   ];
 
   return (
@@ -42,10 +42,10 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       <aside 
         className={`${sidebarOpen ? 'w-64' : 'w-20'} hidden md:flex flex-col border-r border-border bg-sidebar/50 backdrop-blur-xl transition-all duration-300 z-20`}
       >
-        <div className="p-4 flex items-center h-16 border-b border-border/50">
+        <div className="p-6 flex items-center h-20 border-b border-transparent">
           <Link href="/">
-            <a className="flex items-center gap-2 font-heading font-bold text-xl text-foreground overflow-hidden whitespace-nowrap">
-              <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm">
+            <a className="flex items-center gap-3 font-heading font-bold text-2xl text-foreground overflow-hidden whitespace-nowrap">
+              <div className="w-10 h-10 rounded-xl bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-xl">
                 U
               </div>
               {sidebarOpen && <span>UniConnect</span>}
@@ -53,18 +53,18 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           </Link>
         </div>
 
-        <nav className="flex-1 p-4 space-y-1 overflow-y-auto">
+        <nav className="flex-1 px-4 py-2 space-y-1 overflow-y-auto">
           {navigation.map((item) => {
-            const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/app');
+            const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/');
             return (
               <Link key={item.name} href={item.href}>
-                <a className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 ${
+                <a className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
                   isActive 
-                    ? 'bg-primary text-primary-foreground font-medium shadow-sm' 
+                    ? 'bg-primary text-primary-foreground font-medium shadow-md' 
                     : 'text-muted-foreground hover:bg-sidebar-accent hover:text-foreground'
                 }`}>
                   <item.icon className="w-5 h-5 shrink-0" />
-                  {sidebarOpen && <span>{item.name}</span>}
+                  {sidebarOpen && <span className="text-base">{item.name}</span>}
                 </a>
               </Link>
             )
@@ -105,7 +105,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
                 type="search" 
-                placeholder="Search students, campaigns..." 
+                placeholder="Search students, campaigns." 
                 className="w-full bg-muted/40 pl-9 border-transparent focus-visible:ring-1 focus-visible:bg-background transition-all rounded-full h-9"
               />
             </div>
