@@ -259,6 +259,8 @@ export default function EventDetails() {
                   <thead className="bg-muted/30 text-muted-foreground border-b border-border/50">
                     <tr>
                       <th className="px-6 py-4 font-medium">Name</th>
+                      <th className="px-6 py-4 font-medium">Email</th>
+                      <th className="px-6 py-4 font-medium">Phone</th>
                       <th className="px-6 py-4 font-medium">School</th>
                       <th className="px-6 py-4 font-medium">Major</th>
                       <th className="px-6 py-4 font-medium">Degree</th>
@@ -274,6 +276,8 @@ export default function EventDetails() {
                         <td className="px-6 py-4">
                           <div className="font-medium text-foreground">{student.name}</div>
                         </td>
+                        <td className="px-6 py-4 text-muted-foreground">{student.email}</td>
+                        <td className="px-6 py-4 text-muted-foreground whitespace-nowrap">{student.phone}</td>
                         <td className="px-6 py-4">{student.school}</td>
                         <td className="px-6 py-4">{student.major}</td>
                         <td className="px-6 py-4">{student.degree}</td>
