@@ -2,12 +2,15 @@ import { config } from "dotenv";
 import { resolve, dirname } from "path";
 import { fileURLToPath } from "url";
 
-// Load .env before anything else
-const __dirname = dirname(fileURLToPath(import.meta.url));
+// Load .env before anything else. Works in both ESM (tsx) and CJS (production bundle).
+const serverDir =
+  typeof __dirname !== "undefined"
+    ? __dirname
+    : dirname(fileURLToPath(import.meta.url));
 // Try worktree root first, then main repo root
-config({ path: resolve(__dirname, "../.env") });
+config({ path: resolve(serverDir, "../.env") });
 if (!process.env.DATABASE_URL) {
-  config({ path: resolve(__dirname, "../../../../.env") });
+  config({ path: resolve(serverDir, "../../../../.env") });
 }
 
 import pg from "pg";
