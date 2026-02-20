@@ -17,9 +17,16 @@ import { useState, useEffect } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const [location] = useLocation();
-  const [isDark, setIsDark] = useState(true);
+  const [isDark, setIsDark] = useState(() => {
+    const saved = localStorage.getItem("theme-preference");
+    if (saved) {
+      return saved === "dark";
+    }
+    return true; // Default
+  });
 
   useEffect(() => {
+    localStorage.setItem("theme-preference", isDark ? "dark" : "light");
     if (isDark) {
       document.documentElement.classList.add('dark');
     } else {
