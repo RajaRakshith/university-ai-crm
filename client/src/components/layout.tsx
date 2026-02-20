@@ -16,7 +16,7 @@ import { Input } from "./ui/input";
 import { useState, useEffect } from "react";
 
 export function AppLayout({ children }: { children: React.ReactNode }) {
-  const [location] = useLocation();
+  const [location, setLocation] = useLocation();
   const [isDark, setIsDark] = useState(() => {
     const saved = localStorage.getItem("theme-preference");
     if (saved) {
@@ -96,14 +96,26 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         {/* Topbar */}
         <header className="h-16 flex items-center justify-between px-6 border-b border-border bg-background z-10 sticky top-0">
           <div className="flex items-center gap-4 flex-1">
-            <div className="relative hidden md:block w-full max-w-md">
+            <form 
+              className="relative hidden md:block w-full max-w-md"
+              onSubmit={(e) => {
+                e.preventDefault();
+                const formData = new FormData(e.currentTarget);
+                const q = formData.get("q") as string;
+                if (q && q.trim()) {
+                  setLocation(`/search?q=${encodeURIComponent(q.trim())}`);
+                }
+              }}
+            >
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
               <Input 
+                name="q"
                 type="search" 
                 placeholder="Search students, campaigns." 
+                defaultValue={typeof window !== 'undefined' ? new URLSearchParams(window.location.search).get('q') || "" : ""}
                 className="w-full bg-[#111111] pl-9 border-transparent focus-visible:ring-1 focus-visible:ring-ring transition-all rounded-full h-9 text-sm"
               />
-            </div>
+            </form>
           </div>
 
           <div className="flex items-center gap-4 shrink-0">

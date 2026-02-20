@@ -10,6 +10,7 @@ import Students from "@/pages/students";
 import Events from "@/pages/events";
 import Campaigns from "@/pages/campaigns";
 import CampaignBuilder from "@/pages/campaign-builder";
+import SearchResults from "@/pages/search";
 
 import EventDetails from "@/pages/event-details";
 
@@ -22,6 +23,7 @@ function Router() {
       <Route path="/events/:id" component={EventDetails}/>
       <Route path="/campaigns" component={Campaigns}/>
       <Route path="/campaigns/new" component={CampaignBuilder}/>
+      <Route path="/search" component={SearchResults}/>
       <Route component={NotFound} />
     </Switch>
   );
