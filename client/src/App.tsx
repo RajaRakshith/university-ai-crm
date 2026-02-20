@@ -8,6 +8,7 @@ import NotFound from "@/pages/not-found";
 import Dashboard from "@/pages/dashboard";
 import Students from "@/pages/students";
 import Events from "@/pages/events";
+import Campaigns from "@/pages/campaigns";
 import CampaignBuilder from "@/pages/campaign-builder";
 
 import EventDetails from "@/pages/event-details";
@@ -19,6 +20,7 @@ function Router() {
       <Route path="/students" component={Students}/>
       <Route path="/events" component={Events}/>
       <Route path="/events/:id" component={EventDetails}/>
+      <Route path="/campaigns" component={Campaigns}/>
       <Route path="/campaigns/new" component={CampaignBuilder}/>
       <Route component={NotFound} />
     </Switch>
