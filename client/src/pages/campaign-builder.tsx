@@ -22,7 +22,9 @@ import {
   Lightbulb,
   Megaphone,
   RefreshCw,
-  FileText
+  FileText,
+  Mail,
+  MessageSquare
 } from "lucide-react";
 
 const STEPS = [
@@ -46,6 +48,7 @@ export default function CampaignBuilder() {
   const [eventTitle, setEventTitle] = useState("AI & Tech Mixer");
   const [eventSubtitle, setEventSubtitle] = useState("Friday, October 24th @ 6:00 PM");
   const [eventDescription, setEventDescription] = useState("Join us for an exclusive session where you can network with industry leaders, learn about the latest trends in AI, and meet other students building cool things.");
+  const [deliveryChannel, setDeliveryChannel] = useState("email");
 
   const StepIcon = STEPS[currentStep].icon;
 
@@ -449,6 +452,26 @@ export default function CampaignBuilder() {
                 
                 <div className="space-y-4 bg-card border border-border rounded-xl p-5 shadow-sm">
                   <div className="space-y-3">
+                    <Label className="text-base">Delivery Channel</Label>
+                    <div className="grid grid-cols-2 gap-4">
+                      <label 
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryChannel === 'email' ? 'bg-primary/10 border-primary' : 'bg-background hover:bg-muted/50 border-border/50'}`}
+                        onClick={() => setDeliveryChannel('email')}
+                      >
+                        <Mail className="w-4 h-4" />
+                        <span className="font-medium text-sm">Email</span>
+                      </label>
+                      <label 
+                        className={`flex items-center justify-center gap-2 p-3 rounded-lg border cursor-pointer transition-colors ${deliveryChannel === 'sms' ? 'bg-primary/10 border-primary' : 'bg-background hover:bg-muted/50 border-border/50'}`}
+                        onClick={() => setDeliveryChannel('sms')}
+                      >
+                        <MessageSquare className="w-4 h-4" />
+                        <span className="font-medium text-sm">Text Message</span>
+                      </label>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-border">
                     <Label className="text-base">Send Date</Label>
                     <Input type="date" defaultValue={new Date().toISOString().split('T')[0]} className="bg-background" />
                   </div>
@@ -512,8 +535,8 @@ export default function CampaignBuilder() {
 
                   <div className="flex justify-between p-6 hover:bg-muted/10 transition-colors">
                     <div>
-                      <div className="text-sm text-muted-foreground mb-1">Schedule</div>
-                      <div className="font-medium text-lg">Send on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at 10:00 AM</div>
+                      <div className="text-sm text-muted-foreground mb-1">Schedule & Channel</div>
+                      <div className="font-medium text-lg">Send on {new Date().toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} at 10:00 AM via {deliveryChannel === 'email' ? 'Email' : 'Text Message'}</div>
                       <div className="text-sm text-primary mt-1">Smart Send Enabled</div>
                     </div>
                     <Button variant="ghost" size="sm" onClick={() => setCurrentStep(3)}>Edit</Button>
