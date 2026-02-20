@@ -14,7 +14,7 @@ export function serveStatic(app: Express) {
 
   // SPA fallback: never handle API routes here.
   // If an /api route is missing, let upstream API middleware return JSON 404.
-  app.get("*", (req, res, next) => {
+  app.get(/.*/, (req, res, next) => {
     if (req.path.startsWith("/api")) {
       return next();
     }
