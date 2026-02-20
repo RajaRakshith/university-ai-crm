@@ -86,7 +86,7 @@ function MetricCard({ title, value, change, icon: Icon }: any) {
       <CardContent className="p-5">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-[13px] font-medium text-muted-foreground">{title}</h3>
-          <div className="w-8 h-8 rounded-md bg-muted/30 flex items-center justify-center border border-border">
+          <div className="w-8 h-8 rounded-md bg-[#1a1a1a] flex items-center justify-center border border-border/50">
             <Icon className="h-4 w-4 text-muted-foreground" />
           </div>
         </div>
