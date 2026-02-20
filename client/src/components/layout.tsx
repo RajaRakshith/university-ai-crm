@@ -74,7 +74,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
     .map((n) => n[0])
     .join("")
     .toUpperCase()
-    .slice(0, 2) || user?.email[0].toUpperCase() || "U";
+    .slice(0, 2) || user?.email[0].toUpperCase() || "O";
 
   return (
     <div className="flex h-screen bg-background text-foreground">
@@ -84,9 +84,9 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           <Link href={user?.role === "student" ? "/student" : "/"}>
             <a className="flex items-center gap-3 font-heading font-bold text-lg text-foreground overflow-hidden whitespace-nowrap px-2">
               <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-sm">
-                U
+                O
               </div>
-              <span>UniConnect</span>
+              <span>OpportUNI</span>
             </a>
           </Link>
         </div>

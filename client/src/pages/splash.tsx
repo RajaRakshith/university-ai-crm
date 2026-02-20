@@ -10,7 +10,7 @@ export default function Splash() {
         {/* Header */}
         <div className="text-center space-y-4">
           <h1 className="text-4xl md:text-5xl font-bold font-heading tracking-tight text-foreground">
-            University Event Matching Platform
+            OpportUNI
           </h1>
           <p className="text-lg md:text-xl text-muted-foreground">
             Connect students with opportunities using AI-powered matching
