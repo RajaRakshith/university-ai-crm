@@ -1,0 +1,34 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id                   String    @id @default(cuid())
+  name                 String?
+  email                String?
+  resumeObjectUrl      String?   // OCI Object Storage path or URL
+  transcriptObjectUrl  String?
+  rawResumeText        String?   @db.Text
+  rawTranscriptText   String?   @db.Text
+  topics               Json?     // string[] e.g. ["machine learning", "Python"]
+  embedding           Json?     // number[] from OCI GenAI
+  createdAt            DateTime  @default(now())
+}
+
+model Posting {
+  id                   String   @id @default(cuid())
+  posterName           String
+  posterEmail          String
+  title                String
+  description         String   @db.Text
+  whoTheyNeed         String   @db.Text
+  optionalPdfObjectUrl String?
+  topics               Json?    // string[] – inferred from posting text (topic-based matching)
+  embedding            Json?    // number[] – optional, if using OCI GenAI in another region
+  createdAt            DateTime @default(now())
+}
