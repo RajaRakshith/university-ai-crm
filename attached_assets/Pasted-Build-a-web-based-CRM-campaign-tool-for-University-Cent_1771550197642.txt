@@ -1,0 +1,102 @@
+Build a web-based CRM + campaign tool for University Center Managers that helps them target students for events based on inferred interests from student data.
+
+Goal:
+Help centers recruit the right students into events/programs by automatically understanding each student’s interests using:
+- Resume text (skills, industries, keywords, past roles)
+- Club join history (club categories, leadership roles, participation)
+- Class enrollment history (course titles, department, concentration)
+The system should generate an “Interest Profile” per student (e.g., AI/ML, consulting, entrepreneurship, fintech, healthcare, sustainability) with confidence scores.
+
+Product Scope (focus ONLY on students + events/campaigns; no mentor features).
+
+UI Style:
+Modern SaaS like Notion + Airtable + HubSpot campaign tools.
+Clean, minimal, dashboard-first.
+Include light + dark mode.
+
+DATA MODEL / ENTITIES:
+1) Student
+- Name, email, program (MBA/undergrad/etc), grad year
+- Resume (upload or pasted text)
+- Clubs joined (list, roles, dates)
+- Classes taken (list, term)
+- Interest Profile (auto-generated tags + scores)
+- Engagement history (messages received, opens, clicks, event sign-ups)
+
+2) Event
+- Name, date/time, capacity, description, category tags
+
+3) Campaign (core object)
+- Campaign name
+- Linked event
+- Targeting rules
+- Timeline/schedule
+- Target metrics (goal sign-ups)
+- Content (message editor)
+- Status (draft/scheduled/running/completed)
+
+KEY FEATURES REQUIRED:
+
+(1) Campaign Builder (Add Campaign)
+A step-by-step flow with these sections:
+A. Select Event
+- choose an existing event or create a new event
+
+B. Targeting (Interest-based targeting)
+- Show recommended segments based on inferred Interest Profiles
+- Filters: program, grad year, classes taken, clubs joined, interest tags, confidence threshold
+- “Target size” control: user decides the number of students to target (Top N)
+- Show a ranked preview list of students who match, sorted by relevance score
+
+C. Timeline / Scheduling
+- Set when to send the message (date + time)
+- Option to schedule multiple waves (optional)
+- Show a simple timeline view
+
+D. Numbers / Goals
+- Input: “How many students do you want to sign up?” (target sign-ups)
+- System shows predicted conversion estimate based on historical performance (optional)
+- Suggest recommended target size (optional)
+
+E. Content Editor
+- Rich text editor to craft the message
+- Variables for personalization: {FirstName}, {InterestTag}, {RelevantClub}, {RelevantClass}
+- CTA button linking to signup page
+- AI assist (optional): rewrite, shorten, create variations, subject line suggestions
+
+F. Review & Launch
+- Summary of targeting, schedule, goal, and content
+- Confirm campaign creation
+
+(2) Campaign Dashboard (Required)
+A dashboard that shows per-campaign performance and overall performance.
+
+For each campaign show:
+- Reach: number of students targeted / messages sent
+- Views: opens (or views)
+- Clicks (optional)
+- Conversions: sign-ups
+- Conversion rate
+- Progress toward goal sign-ups (e.g., 63/100)
+- Current status: draft / scheduled / running / completed
+- Timeline status: sent / upcoming send / completed
+
+Dashboard views:
+- Overall campaigns table with filters (by event, status, date range)
+- Campaign detail page with funnel chart + time-series trend
+- Segment breakdown: which interests/class/club segments converted best
+
+PAGES TO GENERATE:
+- Landing page (simple value prop for university centers)
+- Main dashboard (overview metrics + campaigns list)
+- Students page (table + student profile + inferred interest profile)
+- Events page (events list + event detail)
+- Create Campaign wizard (multi-step)
+- Campaign dashboard + campaign detail analytics
+
+IMPORTANT UX REQUIREMENTS:
+- The tool should make it easy to “target the top N students” based on inferred interests
+- Show clear, explainable reasons for why a student is targeted (e.g., “Matched: AI interest from resume + AI club + ML course”)
+- The campaign dashboard must make it obvious whether the campaign is on track to hit the sign-up target
+
+Keep the product focused, practical, and purpose-built for university center managers.
