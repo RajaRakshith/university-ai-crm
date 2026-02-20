@@ -18,10 +18,14 @@ import {
   AlignLeft,
   Send,
   Users,
-  Clock
+  Clock,
+  Lightbulb,
+  Megaphone,
+  RefreshCw
 } from "lucide-react";
 
 const STEPS = [
+  { id: "strategy", title: "Strategy", icon: Lightbulb },
   { id: "event", title: "Select Event", icon: CalendarDays },
   { id: "targeting", title: "Targeting", icon: Target },
   { id: "content", title: "Content", icon: AlignLeft },
@@ -31,6 +35,7 @@ const STEPS = [
 
 export default function CampaignBuilder() {
   const [currentStep, setCurrentStep] = useState(0);
+  const [strategy, setStrategy] = useState("initial");
   const [selectedEvent, setSelectedEvent] = useState(MOCK_EVENTS[0].id);
   const [targetSize, setTargetSize] = useState([100]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>(["AI/ML"]);
@@ -85,6 +90,47 @@ export default function CampaignBuilder() {
         {/* Content Area */}
         <div className="min-h-[500px]">
           {currentStep === 0 && (
+            <div className="max-w-3xl mx-auto space-y-6 animate-in slide-in-from-right-4 duration-300">
+              <div className="text-center mb-8">
+                <h3 className="text-2xl font-medium">What is the goal of this campaign?</h3>
+                <p className="text-sm text-muted-foreground mt-2">Choose your campaign strategy to optimize delivery and targeting.</p>
+              </div>
+              
+              <div className="grid md:grid-cols-2 gap-6">
+                <Card 
+                  className={`cursor-pointer transition-all hover:border-primary/50 ${strategy === 'initial' ? 'border-primary ring-1 ring-primary shadow-md' : 'border-border/50 shadow-sm'}`}
+                  onClick={() => setStrategy('initial')}
+                >
+                  <CardContent className="p-8 text-center space-y-4">
+                    <div className="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
+                      <Megaphone className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg mb-2">Initial Invite</h4>
+                      <p className="text-sm text-muted-foreground">Reach out to a new audience to drive first-time signups and build awareness.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+
+                <Card 
+                  className={`cursor-pointer transition-all hover:border-primary/50 ${strategy === 'retargeting' ? 'border-primary ring-1 ring-primary shadow-md' : 'border-border/50 shadow-sm'}`}
+                  onClick={() => setStrategy('retargeting')}
+                >
+                  <CardContent className="p-8 text-center space-y-4">
+                    <div className="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
+                      <RefreshCw className="w-7 h-7" />
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-lg mb-2">Re-targeting</h4>
+                      <p className="text-sm text-muted-foreground">Follow up with students who opened previous emails but haven't signed up yet.</p>
+                    </div>
+                  </CardContent>
+                </Card>
+              </div>
+            </div>
+          )}
+
+          {currentStep === 1 && (
             <div className="space-y-6 animate-in slide-in-from-right-4 duration-300">
               <div className="flex justify-between items-center">
                 <h3 className="text-xl font-medium">Which event are you recruiting for?</h3>
