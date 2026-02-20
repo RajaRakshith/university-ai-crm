@@ -148,34 +148,30 @@ export default function EventDetails() {
                         </DialogTrigger>
                         <DialogContent>
                           <DialogHeader>
-                            <DialogTitle>Edit Additional Signup Form</DialogTitle>
+                            <DialogTitle>Additional Info Required</DialogTitle>
                             <DialogDescription>
-                              Update the variables and tracking tags for the external form.
+                              Specify what additional information students need to provide when they RSVP.
                             </DialogDescription>
                           </DialogHeader>
                           <div className="space-y-4 py-2">
                             <div className="space-y-2">
-                              <Label>Form URL</Label>
-                              <Input defaultValue={event.signupForm} />
-                            </div>
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-2">
-                                <Label>UTM Source</Label>
-                                <Input defaultValue="university_crm" />
-                              </div>
-                              <div className="space-y-2">
-                                <Label>UTM Medium</Label>
-                                <Input defaultValue="email" />
-                              </div>
+                              <Label>Question 1</Label>
+                              <Input defaultValue="Dietary Restrictions" />
                             </div>
                             <div className="space-y-2">
-                              <Label>Custom Variables (URL Parameters)</Label>
-                              <Input defaultValue="?student_id={StudentId}&program={Program}" />
-                              <p className="text-xs text-muted-foreground">These variables will be automatically replaced with the student's actual data when they click the link.</p>
+                              <Label>Question 2</Label>
+                              <Input defaultValue="What are you hoping to learn from this event?" />
                             </div>
+                            <div className="space-y-2">
+                              <Label>Question 3</Label>
+                              <Input placeholder="Add another question..." />
+                            </div>
+                            <Button variant="outline" size="sm" className="w-full mt-2 border-dashed">
+                              + Add Question
+                            </Button>
                           </div>
                           <DialogFooter>
-                            <Button type="button">Save Configuration</Button>
+                            <Button type="button">Save Form</Button>
                           </DialogFooter>
                         </DialogContent>
                       </Dialog>
