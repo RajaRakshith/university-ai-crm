@@ -21,7 +21,8 @@ import {
   Clock,
   Lightbulb,
   Megaphone,
-  RefreshCw
+  RefreshCw,
+  FileText
 } from "lucide-react";
 
 const STEPS = [
@@ -235,6 +236,7 @@ export default function CampaignBuilder() {
                       <thead className="bg-muted/30 text-muted-foreground sticky top-0 backdrop-blur-md">
                         <tr>
                           <th className="px-4 py-3 text-left font-medium">Student</th>
+                          <th className="px-4 py-3 text-left font-medium">Resume</th>
                           <th className="px-4 py-3 text-left font-medium">Match</th>
                           <th className="px-4 py-3 text-left font-medium">Inferred Reason</th>
                         </tr>
@@ -244,7 +246,14 @@ export default function CampaignBuilder() {
                           <tr key={student.id} className="hover:bg-muted/10 transition-colors">
                             <td className="px-4 py-3">
                               <div className="font-medium">{student.name}</div>
-                              <div className="text-xs text-muted-foreground">{student.program}, '{student.year}</div>
+                              <div className="text-xs text-muted-foreground">{student.school} • {student.major} ({student.degree}), '{student.year.slice(-2)}</div>
+                            </td>
+                            <td className="px-4 py-3">
+                              <div className="flex flex-col gap-1">
+                                <span className="text-xs font-medium text-primary hover:underline cursor-pointer flex items-center gap-1" onClick={() => window.open('/resume-placeholder.pdf', '_blank')}>
+                                  <FileText className="w-3 h-3" /> View Resume
+                                </span>
+                              </div>
                             </td>
                             <td className="px-4 py-3">
                               <div className="flex items-center gap-2">
