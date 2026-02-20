@@ -51,6 +51,10 @@ export default function Events() {
                   <div className="flex items-center gap-3">
                     <Users className="w-4 h-4 text-foreground/70" /> Capacity: {event.capacity}
                   </div>
+                  <div className="flex items-center gap-3">
+                    <span className="w-4 h-4 flex items-center justify-center text-foreground/70 text-[10px] font-bold">✓</span>
+                    Signups: {event.signups}
+                  </div>
                 </div>
                 
                 <div className="pt-4 border-t border-border/50 flex justify-between items-center">

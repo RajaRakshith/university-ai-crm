@@ -1,7 +1,7 @@
 export const MOCK_EVENTS = [
-  { id: "1", name: "AI in Finance Panel", date: "Oct 12, 2024", capacity: 150, category: ["Finance", "AI"] },
-  { id: "2", name: "Startup Career Fair", date: "Oct 20, 2024", capacity: 500, category: ["Entrepreneurship", "Careers"] },
-  { id: "3", name: "Sustainable Consulting Case Comp", date: "Nov 5, 2024", capacity: 80, category: ["Consulting", "Sustainability"] },
+  { id: "1", name: "AI in Finance Panel", date: "Oct 12, 2024", capacity: 150, signups: 142, category: ["Finance", "AI"] },
+  { id: "2", name: "Startup Career Fair", date: "Oct 20, 2024", capacity: 500, signups: 320, category: ["Entrepreneurship", "Careers"] },
+  { id: "3", name: "Sustainable Consulting Case Comp", date: "Nov 5, 2024", capacity: 80, signups: 65, category: ["Consulting", "Sustainability"] },
 ];
 
 export const MOCK_STUDENTS = [
