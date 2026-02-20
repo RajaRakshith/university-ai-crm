@@ -3,6 +3,22 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Users, MousePointerClick, CalendarDays, Target, Plus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Link } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+
+interface StudentListItem {
+  id: string;
+  name: string | null;
+  email: string | null;
+  topics: string[];
+  createdAt: string;
+}
+
+interface PostingListItem {
+  id: string;
+  title: string;
+  posterName: string;
+  createdAt: string;
+}
 
 const RECENT_CAMPAIGNS = [
   { id: 1, name: "AI Panel Recruitment", event: "AI in Finance", sent: 120, openRate: "45%", signups: 18, status: "Active" },
@@ -11,6 +27,14 @@ const RECENT_CAMPAIGNS = [
 ];
 
 export default function Dashboard() {
+  const { data: students = [] } = useQuery<StudentListItem[]>({
+    queryKey: ["/api/students"],
+  });
+
+  const { data: postings = [] } = useQuery<PostingListItem[]>({
+    queryKey: ["/api/postings"],
+  });
+
   return (
     <AppLayout>
       <div className="space-y-8 max-w-[1200px] animate-in fade-in duration-300">
@@ -27,9 +51,9 @@ export default function Dashboard() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <MetricCard title="Total Students Reached" value="12,450" change="+12%" icon={Users} />
+          <MetricCard title="Total Students" value={students.length.toLocaleString()} change={students.length > 0 ? `${students.length} uploaded` : "Upload to start"} icon={Users} />
           <MetricCard title="Active Campaigns" value="8" change="+2" icon={Target} />
-          <MetricCard title="Upcoming Events" value="14" change="Next 30 days" icon={CalendarDays} />
+          <MetricCard title="Postings" value={postings.length.toString()} change={postings.length > 0 ? `${postings.length} created` : "Create one"} icon={CalendarDays} />
           <MetricCard title="Avg. Conversion Rate" value="18.5%" change="+2.4%" icon={MousePointerClick} />
         </div>
 
@@ -61,8 +85,8 @@ export default function Dashboard() {
                       <td className="px-5 py-4 font-medium">{campaign.signups}</td>
                       <td className="px-5 py-4">
                         <span className={`px-2.5 py-1 rounded-full text-xs font-semibold ${
-                          campaign.status === 'Active' 
-                            ? 'bg-emerald-500/10 text-emerald-500' 
+                          campaign.status === 'Active'
+                            ? 'bg-emerald-500/10 text-emerald-500'
                             : 'bg-muted text-muted-foreground'
                         }`}>
                           {campaign.status}
