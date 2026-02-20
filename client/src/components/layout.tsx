@@ -8,7 +8,8 @@ import {
   Search,
   Bell,
   Sun,
-  Moon
+  Moon,
+  TrendingUp
 } from "lucide-react";
 import { Button } from "./ui/button";
 import { Avatar, AvatarFallback, AvatarImage } from "./ui/avatar";
@@ -36,6 +37,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
 
   const navigation = [
     { name: "Dashboard", href: "/", icon: BarChart3 },
+    { name: "Analytics", href: "/analytics", icon: TrendingUp },
     { name: "Campaigns", href: "/campaigns", icon: Megaphone },
     { name: "Students", href: "/students", icon: Users },
     { name: "Events", href: "/events", icon: CalendarDays },
