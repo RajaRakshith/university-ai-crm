@@ -7,7 +7,8 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Search, Loader2, Sparkles, Calendar, User, ArrowRight } from "lucide-react";
 import { Link, useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import { useState, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 
 interface PostingListItem {
   id: string;
@@ -55,11 +56,18 @@ function computeTopicMatchScore(studentTopics: string[], postingTopics: string[]
 
 export default function StudentDiscover() {
   const [location] = useLocation();
+  const { profile, isLoading: authLoading } = useAuth();
   const params = new URLSearchParams(location.split("?")[1] || "");
   const urlStudentId = params.get("id");
-  // Also check localStorage for student ID
+  // Prefer URL, then localStorage, then logged-in student's profile from auth/me (set at registration)
   const storedStudentId = typeof window !== "undefined" ? localStorage.getItem("student-id") : null;
-  const studentId = urlStudentId || storedStudentId;
+  const studentId = urlStudentId || storedStudentId || (profile?.id ?? null);
+  // Persist profile id so refresh and direct navigation work
+  useEffect(() => {
+    if (studentId && profile?.id && studentId === profile.id && typeof window !== "undefined" && !localStorage.getItem("student-id")) {
+      localStorage.setItem("student-id", studentId);
+    }
+  }, [studentId, profile?.id]);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState("foryou");
 
@@ -113,7 +121,15 @@ export default function StudentDiscover() {
           </p>
         </div>
 
-        {!studentId && (
+        {authLoading && !urlStudentId && !storedStudentId && (
+          <Card className="border-border/50">
+            <CardContent className="p-12 text-center">
+              <Loader2 className="w-6 h-6 animate-spin text-muted-foreground mx-auto mb-4" />
+              <p className="text-muted-foreground">Loading your profile...</p>
+            </CardContent>
+          </Card>
+        )}
+        {!studentId && !authLoading && (
           <Card className="border-yellow-500/50 bg-yellow-500/5">
             <CardContent className="p-4">
               <p className="text-sm text-muted-foreground">

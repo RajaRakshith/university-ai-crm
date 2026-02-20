@@ -9,6 +9,7 @@ import { User, Mail, Calendar, Upload, FileText, ChevronDown, ChevronUp, Loader2
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useState, useEffect } from "react";
 import { useToast } from "@/hooks/use-toast";
+import { useAuth } from "@/lib/auth";
 
 interface StudentProfile {
   id: string;
@@ -23,11 +24,18 @@ interface StudentProfile {
 
 export default function StudentProfile() {
   const [location] = useLocation();
+  const { profile, isLoading: authLoading } = useAuth();
   const params = new URLSearchParams(location.split("?")[1] || "");
   const urlStudentId = params.get("id");
-  // Also check localStorage for student ID
+  // Prefer URL, then localStorage, then logged-in student's profile from auth/me (set at registration)
   const storedStudentId = typeof window !== "undefined" ? localStorage.getItem("student-id") : null;
-  const studentId = urlStudentId || storedStudentId;
+  const studentId = urlStudentId || storedStudentId || (profile?.id ?? null);
+  // Persist profile id so refresh and direct navigation work
+  useEffect(() => {
+    if (studentId && profile?.id && studentId === profile.id && typeof window !== "undefined" && !localStorage.getItem("student-id")) {
+      localStorage.setItem("student-id", studentId);
+    }
+  }, [studentId, profile?.id]);
   const [showResume, setShowResume] = useState(false);
   const [showTranscript, setShowTranscript] = useState(false);
   const [isEditingPhone, setIsEditingPhone] = useState(false);
@@ -81,6 +89,16 @@ export default function StudentProfile() {
     setPhoneNumber(student?.phoneNumber || "");
     setIsEditingPhone(false);
   };
+
+  if (authLoading && !urlStudentId && !storedStudentId) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center p-12">
+          <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
+        </div>
+      </AppLayout>
+    );
+  }
 
   if (!studentId) {
     return (

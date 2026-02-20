@@ -344,6 +344,7 @@ export async function registerRoutes(
   // ─── POST /api/students/upload ───────────────────────────────────────
   app.post(
     "/api/students/upload",
+    requireAuth,
     upload.fields([
       { name: "resume", maxCount: 1 },
       { name: "transcript", maxCount: 1 },
@@ -425,12 +426,9 @@ export async function registerRoutes(
         let embedding: number[] | null = null;
         if (combinedText && isOciConfigured()) embedding = await createEmbedding(combinedText);
 
-        // Link to authenticated user if available
+        // RequireAuth ensures we have a user; link student to current user when they're a student
         const user = getCurrentUser(req);
-        let userId: string | undefined = undefined;
-        if (user && user.role === "student") {
-          userId = user.id;
-        }
+        const userId = user?.role === "student" ? user.id : undefined;
 
         const student = await storage.createStudent({
           userId,
@@ -483,10 +481,10 @@ export async function registerRoutes(
         return res.status(404).json({ error: "Student not found." });
       }
 
-      // Students can only view their own profile, organizers can view any
+      // Students can only view student records that belong to them (by userId)
       if (user?.role === "student") {
-        const studentByUserId = await storage.getStudentByUserId(user.id);
-        if (studentByUserId?.id !== studentId) {
+        const recordOwnerId = await storage.getStudentUserId(studentId);
+        if (recordOwnerId !== user.id) {
           return res.status(403).json({ error: "Access denied" });
         }
       }
@@ -717,10 +715,10 @@ export async function registerRoutes(
         return res.status(404).json({ error: "Student not found." });
       }
 
-      // Students can only view their own campaigns
+      // Students can only view campaigns for student records that belong to them
       if (user?.role === "student") {
-        const studentByUserId = await storage.getStudentByUserId(user.id);
-        if (studentByUserId?.id !== studentId) {
+        const recordOwnerId = await storage.getStudentUserId(studentId);
+        if (recordOwnerId !== user.id) {
           return res.status(403).json({ error: "Access denied" });
         }
       }

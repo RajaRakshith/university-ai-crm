@@ -145,6 +145,7 @@ export interface IStorage {
   getOrganizerByEmail(email: string): Promise<OrganizerRecord | undefined>;
   getPostingsByOrganizer(organizerId: string): Promise<PostingRecord[]>;
   getStudentByUserId(userId: string): Promise<StudentRecord | undefined>;
+  getStudentUserId(studentId: string): Promise<string | null>;
   getCampaignsForStudent(studentId: string): Promise<CampaignWithPosting[]>;
 }
 
@@ -800,6 +801,11 @@ export class DatabaseStorage implements IStorage {
       embedding: (row.embedding ?? null) as number[] | null,
       createdAt: toIso(row.createdAt),
     };
+  }
+
+  async getStudentUserId(studentId: string): Promise<string | null> {
+    const [row] = await db.select({ userId: students.userId }).from(students).where(eq(students.id, studentId));
+    return row?.userId ?? null;
   }
 
   async getCampaignsForStudent(studentId: string): Promise<CampaignWithPosting[]> {
