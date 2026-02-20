@@ -651,7 +651,7 @@ export async function registerRoutes(
 
       const organizer = await storage.getOrganizerByUserId(user.id);
       if (!organizer) {
-        return res.status(404).json({ error: "Organizer profile not found" });
+        return res.status(200).json([]);
       }
 
       const postings = await storage.getPostingsByOrganizer(organizer.id);

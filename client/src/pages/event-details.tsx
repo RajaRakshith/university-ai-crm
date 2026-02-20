@@ -63,12 +63,29 @@ export default function EventDetails() {
   // Try to fetch as a posting from API
   const { data: posting, isLoading: postingLoading } = useQuery<PostingDetail>({
     queryKey: ["/api/postings", eventId],
+    queryFn: async () => {
+      const res = await fetch(`/api/postings/${eventId}`, { credentials: "include" });
+      if (!res.ok) {
+        if (res.status === 404) return undefined as unknown as PostingDetail;
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error || `Failed to load event (${res.status})`);
+      }
+      return res.json();
+    },
     enabled: !!eventId,
   });
 
   // Fetch matches if it's a posting
   const { data: matchData, isLoading: matchLoading } = useQuery<{ matches: MatchItem[] }>({
     queryKey: ["/api/postings", eventId, "match"],
+    queryFn: async () => {
+      const res = await fetch(`/api/postings/${eventId}/match`, { credentials: "include" });
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error || `Failed to load matches (${res.status})`);
+      }
+      return res.json();
+    },
     enabled: !!eventId && !!posting,
   });
 

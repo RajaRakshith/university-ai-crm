@@ -30,32 +30,51 @@ interface PostingListItem {
 export default function Events() {
   const { toast } = useToast();
   const queryClient = useQueryClient();
-  const { user, profile } = useAuth();
+  const { user, isLoading: authLoading } = useAuth();
   const [createOpen, setCreateOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [activeTab, setActiveTab] = useState<"all" | "my">("all");
 
-  const { data: allPostings = [], isLoading: isLoadingAll } = useQuery<PostingListItem[]>({
+  const { data: allPostings = [], isLoading: isLoadingAll, isError: isAllError } = useQuery<PostingListItem[]>({
     queryKey: ["/api/postings"],
+    queryFn: async () => {
+      const res = await fetch("/api/postings", { credentials: "include" });
+      if (!res.ok) {
+        if (res.status === 401) throw new Error("Unauthorized");
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error || `Failed to load events (${res.status})`);
+      }
+      return res.json();
+    },
     enabled: activeTab === "all",
   });
 
-  const { data: myPostings = [], isLoading: isLoadingMy } = useQuery<PostingListItem[]>({
+  const { data: myPostings = [], isLoading: isLoadingMy, isError: isMyError } = useQuery<PostingListItem[]>({
     queryKey: ["/api/postings/my-events"],
+    queryFn: async () => {
+      const res = await fetch("/api/postings/my-events", { credentials: "include" });
+      if (!res.ok) {
+        if (res.status === 401) throw new Error("Unauthorized");
+        const err = await res.json().catch(() => ({}));
+        throw new Error((err as { error?: string }).error || `Failed to load my events (${res.status})`);
+      }
+      return res.json();
+    },
     enabled: activeTab === "my" && user?.role === "organizer",
   });
 
   const isLoading = activeTab === "all" ? isLoadingAll : isLoadingMy;
+  const hasError = activeTab === "all" ? isAllError : isMyError;
   const postings = activeTab === "all" ? allPostings : myPostings;
 
-  const allEvents = postings.map((p) => ({
+  const allEvents = (Array.isArray(postings) ? postings : []).map((p) => ({
     id: p.id,
-    name: p.title,
-    date: new Date(p.createdAt).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
+    name: p.title ?? "Untitled",
+    date: (p.createdAt ? new Date(p.createdAt) : new Date()).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }),
     capacity: 0,
     signups: 0,
     category: [] as string[],
-    posterName: p.posterName,
+    posterName: p.posterName ?? "",
     isPosting: true,
   }));
 
@@ -112,7 +131,19 @@ export default function Events() {
           <span className="text-sm text-muted-foreground">{filtered.length} events</span>
         </div>
 
-        {isLoading ? (
+        {hasError ? (
+          <div className="flex flex-col items-center justify-center p-12 gap-4 text-center">
+            <p className="text-muted-foreground">Could not load events. You may need to sign in again.</p>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => { queryClient.invalidateQueries({ queryKey: ["/api/postings"] }); queryClient.invalidateQueries({ queryKey: ["/api/postings/my-events"] }); }}>
+                Retry
+              </Button>
+              <Button variant="secondary" asChild>
+                <Link href="/auth/login?role=organizer">Sign in</Link>
+              </Button>
+            </div>
+          </div>
+        ) : isLoading ? (
           <div className="flex items-center justify-center p-12">
             <Loader2 className="w-6 h-6 animate-spin text-muted-foreground" />
           </div>
