@@ -23,7 +23,9 @@ import {
   Mail,
   UserCheck,
   Link as LinkIcon,
-  FileText
+  FileText,
+  Download,
+  History
 } from "lucide-react";
 
 export default function EventDetails() {
@@ -187,11 +189,11 @@ export default function EventDetails() {
           </CardContent>
         </Card>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 gap-6">
           {/* Campaigns Table */}
-          <div className="lg:col-span-2">
+          <div className="col-span-1">
             <Card className="shadow-sm border-border h-full">
-              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between">
+              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-base">Linked Campaigns</CardTitle>
               </CardHeader>
               <CardContent className="p-0">
@@ -240,28 +242,105 @@ export default function EventDetails() {
           </div>
 
           {/* Recent Signups */}
-          <div>
-            <Card className="shadow-sm border-border h-full">
-              <CardHeader className="bg-muted/10 border-b border-border/50">
+          <div className="col-span-1">
+            <Card className="shadow-sm border-border h-full overflow-hidden">
+              <CardHeader className="bg-muted/10 border-b border-border/50 flex flex-row items-center justify-between space-y-0">
                 <CardTitle className="text-base flex items-center gap-2">
                   <UserCheck className="w-4 h-4 text-muted-foreground" />
                   Recent Signups
                 </CardTitle>
+                <Button variant="outline" size="sm" className="gap-2">
+                  <Download className="w-4 h-4" />
+                  Download List
+                </Button>
               </CardHeader>
-              <CardContent className="p-0">
-                <div className="divide-y divide-border">
-                  {MOCK_STUDENTS.slice(0, 4).map((student) => (
-                    <div key={student.id} className="flex items-center gap-3 p-4 hover:bg-muted/10 transition-colors">
-                      <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-xs shrink-0">
-                        {student.name.charAt(0)}
-                      </div>
-                      <div className="flex-1 min-w-0">
-                        <div className="font-medium text-sm truncate">{student.name}</div>
-                        <div className="text-xs text-muted-foreground truncate">{student.program}, {student.year}</div>
-                      </div>
-                    </div>
-                  ))}
-                </div>
+              <CardContent className="p-0 overflow-x-auto">
+                <table className="w-full text-sm text-left whitespace-nowrap">
+                  <thead className="bg-muted/30 text-muted-foreground border-b border-border/50">
+                    <tr>
+                      <th className="px-6 py-4 font-medium">Name</th>
+                      <th className="px-6 py-4 font-medium">School</th>
+                      <th className="px-6 py-4 font-medium">Major</th>
+                      <th className="px-6 py-4 font-medium">Degree</th>
+                      <th className="px-6 py-4 font-medium">Grad Year</th>
+                      <th className="px-6 py-4 font-medium">Top Interests</th>
+                      <th className="px-6 py-4 font-medium">Resume</th>
+                      <th className="px-6 py-4 font-medium text-right">History</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-border/30">
+                    {MOCK_STUDENTS.slice(0, 5).map(student => (
+                      <tr key={student.id} className="hover:bg-muted/10 transition-colors">
+                        <td className="px-6 py-4">
+                          <div className="font-medium text-foreground">{student.name}</div>
+                        </td>
+                        <td className="px-6 py-4">{student.school}</td>
+                        <td className="px-6 py-4">{student.major}</td>
+                        <td className="px-6 py-4">{student.degree}</td>
+                        <td className="px-6 py-4">{student.year}</td>
+                        <td className="px-6 py-4">
+                          <div className="flex gap-2 flex-wrap max-w-[200px]">
+                            {student.interests.map(i => (
+                              <span key={i.tag} className="px-2 py-1 rounded-md bg-secondary text-secondary-foreground text-xs font-medium border border-border/50 truncate">
+                                {i.tag}
+                              </span>
+                            ))}
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-primary hover:underline cursor-pointer flex items-center gap-1" onClick={() => window.open('/resume-placeholder.pdf', '_blank')}>
+                              <FileText className="w-3 h-3" /> View Resume
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4 text-right">
+                          <Dialog>
+                            <DialogTrigger asChild>
+                              <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+                                <History className="w-4 h-4" /> View History
+                              </Button>
+                            </DialogTrigger>
+                            <DialogContent>
+                              <DialogHeader>
+                                <DialogTitle>Attendance History for {student.name}</DialogTitle>
+                              </DialogHeader>
+                              <div className="space-y-4 pt-4">
+                                <div className="flex gap-4 items-start pb-4 border-b border-border/50">
+                                  <div className="bg-primary/10 p-2 rounded-lg text-primary mt-1">
+                                    <CalendarDays className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium">AI & Tech Mixer</h4>
+                                    <p className="text-sm text-muted-foreground">Attended • Oct 15, 2024</p>
+                                  </div>
+                                </div>
+                                <div className="flex gap-4 items-start pb-4 border-b border-border/50">
+                                  <div className="bg-primary/10 p-2 rounded-lg text-primary mt-1">
+                                    <CalendarDays className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium">Startup Career Fair</h4>
+                                    <p className="text-sm text-muted-foreground">RSVP'd • Oct 20, 2024</p>
+                                  </div>
+                                </div>
+                                <div className="flex gap-4 items-start pb-2">
+                                  <div className="bg-muted p-2 rounded-lg text-muted-foreground mt-1">
+                                    <CalendarDays className="w-4 h-4" />
+                                  </div>
+                                  <div>
+                                    <h4 className="font-medium text-muted-foreground">Sustainable Consulting Case Comp</h4>
+                                    <p className="text-sm text-muted-foreground">Opened Email • Nov 5, 2024</p>
+                                  </div>
+                                </div>
+                              </div>
+                            </DialogContent>
+                          </Dialog>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
                 <div className="p-4 border-t border-border bg-muted/10 text-center">
                   <Button variant="link" className="text-sm h-auto p-0">View all {event.signups} attendees</Button>
                 </div>
