@@ -1,5 +1,5 @@
 /**
- * OCI integration for UniConnect CRM (per Backend API Reference).
+ * OCI integration for OpportUNI (per Backend API Reference).
  * - Object Storage: store resume/transcript PDFs
  * - Document Understanding: extract text from PDFs (us-ashburn-1)
  * - Gemini 2.5 Flash: infer free-form topics (us-ashburn-1)

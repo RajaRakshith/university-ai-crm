@@ -10,7 +10,7 @@ export default function StudentHome() {
       <div className="space-y-8 animate-in fade-in duration-500 max-w-4xl mx-auto">
         <div className="text-center space-y-4">
           <h1 className="text-4xl font-bold font-heading tracking-tight">
-            Welcome to UniConnect
+            Welcome to OpportUNI
           </h1>
           <p className="text-xl text-muted-foreground">
             Discover opportunities that match your skills and interests
