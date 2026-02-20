@@ -285,7 +285,7 @@ export default function CampaignBuilder() {
                         <div 
                           key={num}
                           onClick={() => setSelectedImage(`/images/preset-${num}.png`)}
-                          className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all aspect-video ${selectedImage === \`/images/preset-\${num}.png\` ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-primary/50'}`}
+                          className={`cursor-pointer rounded-md overflow-hidden border-2 transition-all aspect-video ${selectedImage === "/images/preset-" + num + ".png" ? 'border-primary ring-2 ring-primary/20' : 'border-transparent hover:border-primary/50'}`}
                         >
                           <img src={`/images/preset-${num}.png`} alt={`Preset ${num}`} className="w-full h-full object-cover" />
                         </div>
