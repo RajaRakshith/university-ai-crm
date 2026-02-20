@@ -37,6 +37,7 @@ const STEPS = [
 export default function CampaignBuilder() {
   const [currentStep, setCurrentStep] = useState(0);
   const [strategy, setStrategy] = useState("initial");
+  const [retargetingAudience, setRetargetingAudience] = useState("signed-up");
   const [selectedEvent, setSelectedEvent] = useState(MOCK_EVENTS[0].id);
   const [targetSize, setTargetSize] = useState([100]);
   const [selectedInterests, setSelectedInterests] = useState<string[]>(["AI/ML"]);
@@ -125,14 +126,52 @@ export default function CampaignBuilder() {
                   className={`cursor-pointer transition-all hover:border-primary/50 ${strategy === 'retargeting' ? 'border-primary ring-1 ring-primary shadow-md' : 'border-border/50 shadow-sm'}`}
                   onClick={() => setStrategy('retargeting')}
                 >
-                  <CardContent className="p-8 text-center space-y-4">
+                  <CardContent className="p-8 text-center space-y-4 relative">
                     <div className="w-14 h-14 bg-primary/10 text-primary rounded-full flex items-center justify-center mx-auto">
                       <RefreshCw className="w-7 h-7" />
                     </div>
                     <div>
                       <h4 className="font-semibold text-lg mb-2">Re-targeting</h4>
-                      <p className="text-sm text-muted-foreground">Follow up with students who opened previous emails but haven't signed up yet.</p>
+                      <p className="text-sm text-muted-foreground">Follow up with students who interacted with previous campaigns.</p>
                     </div>
+
+                    {strategy === 'retargeting' && (
+                      <div className="pt-4 mt-4 border-t border-border/50 text-left animate-in slide-in-from-top-2">
+                        <Label className="text-sm font-semibold mb-3 block text-center">Select Audience</Label>
+                        <div className="space-y-2">
+                          <label 
+                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${retargetingAudience === 'signed-up' ? 'bg-primary/5 border-primary/50' : 'bg-background hover:bg-muted/50 border-border/50'}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRetargetingAudience('signed-up');
+                            }}
+                          >
+                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${retargetingAudience === 'signed-up' ? 'border-primary' : 'border-muted-foreground'}`}>
+                              {retargetingAudience === 'signed-up' && <div className="w-2 h-2 rounded-full bg-primary" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium">Previously Signed Up</div>
+                              <div className="text-xs text-muted-foreground">Students who attended past events</div>
+                            </div>
+                          </label>
+                          <label 
+                            className={`flex items-center gap-3 p-3 rounded-lg border cursor-pointer transition-colors ${retargetingAudience === 'highly-interested' ? 'bg-primary/5 border-primary/50' : 'bg-background hover:bg-muted/50 border-border/50'}`}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setRetargetingAudience('highly-interested');
+                            }}
+                          >
+                            <div className={`w-4 h-4 rounded-full border flex items-center justify-center ${retargetingAudience === 'highly-interested' ? 'border-primary' : 'border-muted-foreground'}`}>
+                              {retargetingAudience === 'highly-interested' && <div className="w-2 h-2 rounded-full bg-primary" />}
+                            </div>
+                            <div className="flex-1">
+                              <div className="text-sm font-medium">Highly Interested</div>
+                              <div className="text-xs text-muted-foreground">Opened emails but didn't RSVP</div>
+                            </div>
+                          </label>
+                        </div>
+                      </div>
+                    )}
                   </CardContent>
                 </Card>
               </div>
