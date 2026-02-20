@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout";
 import { MOCK_STUDENTS } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Download, FileText } from "lucide-react";
+import { Search, Filter, Download, FileText, History } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Students() {
@@ -41,6 +41,7 @@ export default function Students() {
                   <th className="px-6 py-4 font-medium">Grad Year</th>
                   <th className="px-6 py-4 font-medium">Top Interests</th>
                   <th className="px-6 py-4 font-medium">Resume</th>
+                  <th className="px-6 py-4 font-medium text-right">History</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-border/30">
@@ -68,6 +69,11 @@ export default function Students() {
                           <FileText className="w-3 h-3" /> View Resume
                         </span>
                       </div>
+                    </td>
+                    <td className="px-6 py-4 text-right">
+                      <Button variant="ghost" size="sm" className="gap-2 text-muted-foreground hover:text-foreground">
+                        <History className="w-4 h-4" /> View History
+                      </Button>
                     </td>
                   </tr>
                 ))}
