@@ -1,0 +1,127 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model Student {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  major     String?
+  year      String?
+  resumeText String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  interests    StudentInterest[]
+  interactions Interaction[]
+  digestItems  DigestItem[]
+}
+
+model InterestTopic {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  category    String?
+  createdAt   DateTime @default(now())
+
+  studentInterests StudentInterest[]
+  eventTopics      EventTopic[]
+}
+
+model StudentInterest {
+  id         String   @id @default(cuid())
+  studentId  String
+  topicId    String
+  weight     Float    // 0.0 to 1.0
+  source     String   // "resume", "manual", "feedback"
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  student Student       @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  topic   InterestTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, topicId])
+}
+
+model Center {
+  id          String   @id @default(cuid())
+  name        String   @unique
+  description String?
+  createdAt   DateTime @default(now())
+
+  events Event[]
+}
+
+model Event {
+  id          String   @id @default(cuid())
+  centerId    String
+  title       String
+  description String
+  eventDate   DateTime
+  location    String?
+  imageUrl    String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  center    Center      @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  topics    EventTopic[]
+  campaigns Campaign[]
+  digestItems DigestItem[]
+  interactions Interaction[]
+}
+
+model EventTopic {
+  id      String @id @default(cuid())
+  eventId String
+  topicId String
+  weight  Float  @default(1.0)
+
+  event Event         @relation(fields: [eventId], references: [id], onDelete: Cascade)
+  topic InterestTopic @relation(fields: [topicId], references: [id], onDelete: Cascade)
+
+  @@unique([eventId, topicId])
+}
+
+model Campaign {
+  id               String   @id @default(cuid())
+  eventId          String
+  threshold        Float    // minimum match score
+  targetedCount    Int      // how many students matched
+  sentAt           DateTime @default(now())
+  
+  event Event @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}
+
+model DigestItem {
+  id        String   @id @default(cuid())
+  studentId String
+  eventId   String
+  score     Float    // relevance score
+  weekOf    DateTime // which week's digest
+  sent      Boolean  @default(false)
+  createdAt DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, eventId])
+  @@index([studentId, weekOf])
+}
+
+model Interaction {
+  id         String   @id @default(cuid())
+  studentId  String
+  eventId    String
+  type       String   // "interested", "not_relevant", "strong_interest", "clicked", "signed_up"
+  createdAt  DateTime @default(now())
+
+  student Student @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  event   Event   @relation(fields: [eventId], references: [id], onDelete: Cascade)
+}

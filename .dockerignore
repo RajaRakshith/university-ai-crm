@@ -1,0 +1,15 @@
+node_modules
+.next
+.git
+.gitignore
+README.md
+.env
+.env.local
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.DS_Store
+*.pem
+!oci_api_key.pem
+prisma/dev.db
+prisma/dev.db-journal
