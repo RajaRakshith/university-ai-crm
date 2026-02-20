@@ -6,9 +6,9 @@ import { Search, Filter, Plus, Megaphone } from "lucide-react";
 import { Link } from "wouter";
 
 const MOCK_CAMPAIGNS = [
-  { id: "1", name: "AI Mixer Invite", event: "AI & Tech Mixer", status: "Sent", type: "Initial Invite", date: "Oct 1, 2024", performance: "68% Open" },
-  { id: "2", name: "Career Fair Reminder", event: "Startup Career Fair", status: "Scheduled", type: "Re-targeting", date: "Oct 18, 2024", performance: "-" },
-  { id: "3", name: "Case Comp Launch", event: "Sustainable Consulting Case Comp", status: "Draft", type: "Initial Invite", date: "-", performance: "-" },
+  { id: "1", name: "AI Mixer Invite", event: "AI & Tech Mixer", status: "Sent", type: "Initial Invite", date: "Oct 1, 2024", performance: "68% Open", sent: 120, signups: 45 },
+  { id: "2", name: "Career Fair Reminder", event: "Startup Career Fair", status: "Scheduled", type: "Re-targeting", date: "Oct 18, 2024", performance: "-", sent: 350, signups: 0 },
+  { id: "3", name: "Case Comp Launch", event: "Sustainable Consulting Case Comp", status: "Draft", type: "Initial Invite", date: "-", performance: "-", sent: 0, signups: 0 },
 ];
 
 export default function Campaigns() {
@@ -49,6 +49,8 @@ export default function Campaigns() {
                   <th className="px-6 py-4 font-medium">Type</th>
                   <th className="px-6 py-4 font-medium">Status</th>
                   <th className="px-6 py-4 font-medium">Date</th>
+                  <th className="px-6 py-4 font-medium">Sent</th>
+                  <th className="px-6 py-4 font-medium">Signups</th>
                   <th className="px-6 py-4 font-medium">Performance</th>
                   <th className="px-6 py-4 font-medium text-right">Actions</th>
                 </tr>
@@ -78,6 +80,8 @@ export default function Campaigns() {
                       </span>
                     </td>
                     <td className="px-6 py-4 text-muted-foreground">{campaign.date}</td>
+                    <td className="px-6 py-4 font-medium">{campaign.sent > 0 ? campaign.sent : '-'}</td>
+                    <td className="px-6 py-4 font-medium">{campaign.signups > 0 ? campaign.signups : '-'}</td>
                     <td className="px-6 py-4 font-medium">{campaign.performance}</td>
                     <td className="px-6 py-4 text-right">
                       <Button variant="ghost" size="sm">View</Button>
