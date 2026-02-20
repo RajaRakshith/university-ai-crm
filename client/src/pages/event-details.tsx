@@ -267,6 +267,7 @@ export default function EventDetails() {
                       <th className="px-6 py-4 font-medium">Grad Year</th>
                       <th className="px-6 py-4 font-medium">Top Interests</th>
                       <th className="px-6 py-4 font-medium">Resume</th>
+                      <th className="px-6 py-4 font-medium">Transcript</th>
                       <th className="px-6 py-4 font-medium text-right">History</th>
                     </tr>
                   </thead>
@@ -295,6 +296,13 @@ export default function EventDetails() {
                           <div className="flex flex-col gap-1">
                             <span className="text-xs font-medium text-primary hover:underline cursor-pointer flex items-center gap-1" onClick={() => window.open('/resume-placeholder.pdf', '_blank')}>
                               <FileText className="w-3 h-3" /> View Resume
+                            </span>
+                          </div>
+                        </td>
+                        <td className="px-6 py-4">
+                          <div className="flex flex-col gap-1">
+                            <span className="text-xs font-medium text-primary hover:underline cursor-pointer flex items-center gap-1" onClick={() => window.open('/transcript-placeholder.pdf', '_blank')}>
+                              <FileText className="w-3 h-3" /> View Transcript
                             </span>
                           </div>
                         </td>
