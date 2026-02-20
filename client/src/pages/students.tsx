@@ -2,7 +2,7 @@ import { AppLayout } from "@/components/layout";
 import { MOCK_STUDENTS } from "@/lib/mock-data";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
-import { Search, Filter, Download } from "lucide-react";
+import { Search, Filter, Download, FileText } from "lucide-react";
 import { Button } from "@/components/ui/button";
 
 export default function Students() {
@@ -35,7 +35,8 @@ export default function Students() {
               <thead className="bg-muted/30 text-muted-foreground border-b border-border/50">
                 <tr>
                   <th className="px-6 py-4 font-medium">Name</th>
-                  <th className="px-6 py-4 font-medium">Program</th>
+                  <th className="px-6 py-4 font-medium">Academic Info</th>
+                  <th className="px-6 py-4 font-medium">Resume</th>
                   <th className="px-6 py-4 font-medium">Grad Year</th>
                   <th className="px-6 py-4 font-medium">Top Interests</th>
                   <th className="px-6 py-4 font-medium text-right">Actions</th>
@@ -47,7 +48,17 @@ export default function Students() {
                     <td className="px-6 py-4">
                       <div className="font-medium text-foreground">{student.name}</div>
                     </td>
-                    <td className="px-6 py-4">{student.program}</td>
+                    <td className="px-6 py-4">
+                      <div className="font-medium">{student.school}</div>
+                      <div className="text-xs text-muted-foreground">{student.major} ({student.degree})</div>
+                    </td>
+                    <td className="px-6 py-4">
+                      <div className="flex flex-col gap-1">
+                        <span className="text-xs font-medium text-primary hover:underline cursor-pointer flex items-center gap-1" onClick={() => window.open('/resume-placeholder.pdf', '_blank')}>
+                          <FileText className="w-3 h-3" /> View Resume
+                        </span>
+                      </div>
+                    </td>
                     <td className="px-6 py-4">{student.year}</td>
                     <td className="px-6 py-4">
                       <div className="flex gap-2 flex-wrap">
