@@ -55,18 +55,27 @@ export default function StudentDashboard() {
   const fetchRecommendedEvents = async () => {
     try {
       // Use matching API to get personalized recommendations
-      const response = await fetch(`/api/students/${studentId}/matches?threshold=0.3`);
+      const response = await fetch(`/api/students/${studentId}/matches?threshold=0.2`);
       if (response.ok) {
         const data = await response.json();
-        // Extract event objects from matches
-        const events = data.matches.map((match: any) => match.event).filter(Boolean);
-        setRecommendedEvents(events.slice(0, 3)); // Show top 3
+        console.log('Matches response:', data);
+        
+        // Map matches to include event and score
+        const eventsWithScores = data.matches.map((match: any) => ({
+          ...match.event,
+          matchScore: match.score,
+          matchedTopics: match.matchedTopics
+        })).filter((e: any) => e && e.id);
+        
+        console.log('Events with scores:', eventsWithScores);
+        setRecommendedEvents(eventsWithScores); // Show all matched events
       } else {
+        console.error('Failed to fetch matches:', response.status);
         // Fallback to all events if matching fails
         const fallbackResponse = await fetch(`/api/events`);
         if (fallbackResponse.ok) {
           const fallbackData = await fallbackResponse.json();
-          setRecommendedEvents(fallbackData.events.slice(0, 3));
+          setRecommendedEvents(fallbackData.events || []);
         }
       }
     } catch (error) {
@@ -158,18 +167,22 @@ export default function StudentDashboard() {
           </Card>
         </div>
 
-        {/* Your Interests */}
+        {/* Your Top Interests */}
         {student && student.interests.length > 0 && (
           <Card className="mb-8">
             <CardHeader>
-              <CardTitle>Your Interests</CardTitle>
+              <CardTitle>Your Top Interests</CardTitle>
+              <p className="text-sm text-muted-foreground mt-1">Based on your resume and transcript</p>
             </CardHeader>
             <CardContent>
               <div className="flex flex-wrap gap-2">
-                {student.interests.map((interest, idx) => (
+                {student.interests
+                  .sort((a, b) => b.weight - a.weight)
+                  .slice(0, 4)
+                  .map((interest, idx) => (
                   <span
                     key={idx}
-                    className="px-3 py-1 bg-primary/10 text-primary rounded-full text-sm font-medium"
+                    className="px-4 py-2 bg-primary/10 text-primary rounded-full text-sm font-medium border border-primary/20"
                   >
                     {interest.topic.name} ({Math.round(interest.weight * 100)}%)
                   </span>
@@ -182,33 +195,71 @@ export default function StudentDashboard() {
         {/* Recommended Events */}
         <div>
           <div className="flex justify-between items-center mb-6">
-            <h2 className="text-2xl font-bold">Recommended Events for You</h2>
-            <Button variant="outline" onClick={() => setLocation('/events')}>
-              View All Events
-            </Button>
+            <div>
+              <h2 className="text-2xl font-bold">Events Matched to Your Interests</h2>
+              <p className="text-sm text-muted-foreground mt-1">Sorted by match score</p>
+            </div>
           </div>
 
           {loading ? (
             <p className="text-muted-foreground">Loading recommendations...</p>
           ) : recommendedEvents.length > 0 ? (
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {recommendedEvents.map((event) => (
-                <Card key={event.id} className="hover:shadow-lg transition-shadow">
-                  <CardHeader>
-                    <div className="text-xs text-muted-foreground mb-2">{event.center.name}</div>
-                    <CardTitle className="text-lg">{event.title}</CardTitle>
-                  </CardHeader>
-                  <CardContent>
-                    <p className="text-sm text-muted-foreground mb-4 line-clamp-2">
-                      {event.description}
-                    </p>
-                    <div className="flex items-center text-sm text-muted-foreground mb-4">
-                      <Calendar className="w-4 h-4 mr-2" />
-                      {new Date(event.eventDate).toLocaleDateString()}
+            <div className="space-y-4">
+              {recommendedEvents.map((event: any) => (
+                <Card key={event.id} className="hover:shadow-md transition-shadow">
+                  <CardContent className="p-6">
+                    <div className="flex justify-between items-start">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-3 mb-2">
+                          {event.center?.name && (
+                            <div className="text-xs text-muted-foreground">{event.center.name}</div>
+                          )}
+                          {event.matchScore !== undefined && (
+                            <div className="flex items-center gap-1.5">
+                              <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
+                                <div 
+                                  className="h-full bg-primary rounded-full"
+                                  style={{ width: `${Math.min(event.matchScore * 100, 100)}%` }}
+                                />
+                              </div>
+                              <span className="text-xs font-medium text-primary">
+                                {Math.round(event.matchScore * 100)}% match
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                        <h3 className="text-xl font-semibold mb-2">{event.title}</h3>
+                        <p className="text-sm text-muted-foreground mb-3 line-clamp-2">
+                          {event.description}
+                        </p>
+                        <div className="flex items-center gap-4 text-sm text-muted-foreground">
+                          <div className="flex items-center">
+                            <Calendar className="w-4 h-4 mr-1.5" />
+                            {new Date(event.eventDate).toLocaleDateString()}
+                          </div>
+                          {event.matchedTopics && event.matchedTopics.length > 0 && (
+                            <div className="flex items-center gap-1.5">
+                              <Sparkles className="w-4 h-4" />
+                              <div className="flex flex-wrap gap-1">
+                                {event.matchedTopics.slice(0, 3).map((topic: string, idx: number) => (
+                                  <span key={idx} className="text-xs font-medium text-primary">
+                                    {topic}{idx < Math.min(event.matchedTopics.length, 3) - 1 ? ',' : ''}
+                                  </span>
+                                ))}
+                                {event.matchedTopics.length > 3 && (
+                                  <span className="text-xs font-medium text-muted-foreground">
+                                    +{event.matchedTopics.length - 3} more
+                                  </span>
+                                )}
+                              </div>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                      <Button size="sm" className="ml-4">
+                        View Details
+                      </Button>
                     </div>
-                    <Button className="w-full" size="sm">
-                      Learn More
-                    </Button>
                   </CardContent>
                 </Card>
               ))}
@@ -216,7 +267,11 @@ export default function StudentDashboard() {
           ) : (
             <Card>
               <CardContent className="p-8 text-center">
-                <p className="text-muted-foreground">No events available yet. Check back soon!</p>
+                <Calendar className="w-12 h-12 mx-auto mb-3 opacity-50 text-muted-foreground" />
+                <p className="text-muted-foreground font-medium mb-2">No matching events found</p>
+                <p className="text-sm text-muted-foreground">
+                  We'll notify you when events match your interests. Make sure your profile is complete with resume and transcript data.
+                </p>
               </CardContent>
             </Card>
           )}

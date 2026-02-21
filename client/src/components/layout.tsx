@@ -51,13 +51,11 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       {/* Sidebar */}
       <aside className="w-64 hidden md:flex flex-col border-r border-border bg-sidebar shrink-0">
         <div className="p-4 flex items-center h-16 border-b border-border">
-          <Link href="/">
-            <a className="flex items-center gap-3 font-heading font-bold text-lg text-foreground overflow-hidden whitespace-nowrap px-2">
-              <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-sm">
-                U
-              </div>
-              <span>UniConnect</span>
-            </a>
+          <Link href="/" className="flex items-center gap-3 font-heading font-bold text-lg text-foreground overflow-hidden whitespace-nowrap px-2">
+            <div className="w-8 h-8 rounded-lg bg-primary text-primary-foreground flex items-center justify-center shrink-0 shadow-sm text-sm">
+              U
+            </div>
+            <span>UniConnect</span>
           </Link>
         </div>
 
@@ -65,15 +63,13 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {navigation.map((item) => {
             const isActive = location === item.href || (location.startsWith(item.href) && item.href !== '/');
             return (
-              <Link key={item.name} href={item.href}>
-                <a className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
-                  isActive 
-                    ? 'bg-white text-black font-medium shadow-sm' 
-                    : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
-                }`}>
-                  <item.icon className={`w-4 h-4 shrink-0 ${isActive ? '' : 'text-muted-foreground'}`} />
-                  <span>{item.name}</span>
-                </a>
+              <Link key={item.name} href={item.href} className={`flex items-center gap-3 px-3 py-2.5 rounded-lg transition-all duration-200 text-sm ${
+                isActive 
+                  ? 'bg-white text-black font-medium shadow-sm' 
+                  : 'text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground'
+              }`}>
+                <item.icon className={`w-4 h-4 shrink-0 ${isActive ? '' : 'text-muted-foreground'}`} />
+                <span>{item.name}</span>
               </Link>
             )
           })}

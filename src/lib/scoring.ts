@@ -1,4 +1,5 @@
 import { TopicWeight, StudentVector, EventVector, MatchScore } from './types';
+import { normalizeTopicName } from './topic-map';
 
 /**
  * Student with metadata for requirement filtering
@@ -48,11 +49,29 @@ export function meetsRequirements(
 
 /**
  * Calculate cosine similarity between two topic vectors
+ * Topics are normalized to canonical forms before comparison
  */
 export function cosineSimilarity(vec1: TopicWeight[], vec2: TopicWeight[]): number {
-  // Create maps for quick lookup
-  const vec1Map = new Map(vec1.map(t => [t.topic, t.weight]));
-  const vec2Map = new Map(vec2.map(t => [t.topic, t.weight]));
+  console.log('\n🔍 COSINE SIMILARITY CALLED');
+  console.log('Vec1 topics:', vec1.map(t => t.topic));
+  console.log('Vec2 topics:', vec2.map(t => t.topic));
+  
+  // Normalize topics to canonical forms and aggregate weights
+  const normalizeVector = (vec: TopicWeight[]) => {
+    const normalized = new Map<string, number>();
+    for (const { topic, weight } of vec) {
+      const canonical = normalizeTopicName(topic) || topic;
+      console.log(`  Normalizing "${topic}" → "${canonical}"`);
+      normalized.set(canonical, (normalized.get(canonical) || 0) + weight);
+    }
+    return normalized;
+  };
+  
+  const vec1Map = normalizeVector(vec1);
+  const vec2Map = normalizeVector(vec2);
+  
+  console.log('Normalized vec1:', Array.from(vec1Map.entries()));
+  console.log('Normalized vec2:', Array.from(vec2Map.entries()));
   
   // Get all unique topics
   const allTopics = new Set([...vec1Map.keys(), ...vec2Map.keys()]);
@@ -84,10 +103,27 @@ export function calculateMatchScore(
 ): MatchScore {
   const score = cosineSimilarity(student.topics, event.topics);
   
-  // Find which topics matched (both have non-zero weight)
-  const studentTopics = new Set(student.topics.map(t => t.topic));
-  const eventTopics = new Set(event.topics.map(t => t.topic));
-  const matchedTopics = [...studentTopics].filter(t => eventTopics.has(t));
+  // Find which topics matched after normalization
+  const studentNormalized = new Map<string, string>();
+  student.topics.forEach(t => {
+    const canonical = normalizeTopicName(t.topic) || t.topic;
+    if (!studentNormalized.has(canonical)) {
+      studentNormalized.set(canonical, t.topic);
+    }
+  });
+  
+  const eventNormalized = new Set<string>();
+  event.topics.forEach(t => {
+    const canonical = normalizeTopicName(t.topic) || t.topic;
+    eventNormalized.add(canonical);
+  });
+  
+  const matchedTopics: string[] = [];
+  studentNormalized.forEach((originalTopic, canonical) => {
+    if (eventNormalized.has(canonical)) {
+      matchedTopics.push(originalTopic);
+    }
+  });
   
   return {
     studentId: student.studentId,

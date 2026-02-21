@@ -117,22 +117,30 @@ export async function extractInterestsWithOracle(
 function buildExtractionPrompt(text: string): string {
   return `You are an expert at analyzing student profiles and extracting professional interests.
 
-Analyze the following student profile/resume text and extract their interests and skills.
+Analyze the following student profile/resume text and extract ALL their interests, skills, academic areas, industries, and career aspirations.
 
-Available topics to choose from:
-${CANONICAL_TOPICS.join(', ')}
+Extract ANY relevant topic you find - don't limit yourself to a predefined list. Be comprehensive and specific.
 
-For each relevant topic, assign a relevance score from 0.0 to 1.0 where:
-- 1.0 = Primary focus/expertise (mentioned multiple times, clear expertise)
+For each topic, assign a relevance score from 0.0 to 1.0 where:
+- 1.0 = Primary focus/expertise (mentioned multiple times, clear expertise, major/degree)
 - 0.7-0.9 = Strong interest or significant experience
 - 0.4-0.6 = Moderate interest or some experience
 - 0.0-0.3 = Minor interest or tangential mention
 
+Examples of topics to extract:
+- Academic majors (e.g., "Pre-Med", "Computer Science", "Business")
+- Technical skills (e.g., "Python", "React", "Data Analysis")
+- Industries (e.g., "Healthcare", "Finance", "Climate Tech")
+- Career interests (e.g., "Product Management", "Research", "Entrepreneurship")
+- Soft skills (e.g., "Leadership", "Communication", "Design")
+- Specific domains (e.g., "Machine Learning", "Blockchain", "Biotech")
+
 Return ONLY a JSON object in this exact format (no markdown, no explanation):
 {
   "topics": [
-    {"topic": "AI", "weight": 0.95},
-    {"topic": "Healthcare", "weight": 0.80}
+    {"topic": "Pre-Med", "weight": 1.0},
+    {"topic": "Neuroscience", "weight": 0.85},
+    {"topic": "Research", "weight": 0.90}
   ]
 }
 
@@ -171,38 +179,111 @@ async function callOracleGenAI(
       authenticationDetailsProvider: provider,
     });
 
-    // Set endpoint to Chicago region (where GenAI is available)
+    // Set endpoint
     client.endpoint = config.endpoint;
 
     console.log('[Oracle GenAI] Client created, sending request...');
 
-    // Create request
-    const generateTextDetails: genai.requests.GenerateTextRequest = {
-      generateTextDetails: {
-        compartmentId: config.compartmentOcid,
-        servingMode: {
-          servingType: 'ON_DEMAND',
-          modelId: config.modelId,
-        } as genai.models.OnDemandServingMode,
-        inferenceRequest: {
-          runtimeType: 'COHERE',
-          prompt: prompt,
-          maxTokens: 500,
-          temperature: 0.3,
-          topP: 0.9,
-          isStream: false,
-        } as genai.models.CohereLlmInferenceRequest,
-      },
-    };
+    // Determine model type from model ID
+    const isGemini = config.modelId.toLowerCase().includes('gemini') || config.modelId.toLowerCase().includes('google');
+    const isCohere = config.modelId.toLowerCase().includes('cohere');
+    const isMeta = config.modelId.toLowerCase().includes('meta') || config.modelId.toLowerCase().includes('llama');
 
-    const response = await client.generateText(generateTextDetails);
+    let generatedText = '';
 
-    console.log('[Oracle GenAI] Response received');
-    console.log('  - Status:', response._httpResponse?.status);
+    if (isGemini) {
+      // Google Gemini models use Chat API
+      console.log('[Oracle GenAI] Using Gemini Chat API');
+      const chatDetails: genai.requests.ChatRequest = {
+        chatDetails: {
+          compartmentId: config.compartmentOcid,
+          servingMode: {
+            servingType: 'ON_DEMAND',
+            modelId: config.modelId,
+          } as genai.models.OnDemandServingMode,
+          chatRequest: {
+            apiFormat: 'GENERIC',
+            messages: [
+              {
+                role: 'USER',
+                content: [
+                  {
+                    type: 'TEXT',
+                    text: prompt,
+                  } as genai.models.TextContent,
+                ],
+              } as genai.models.UserMessage,
+            ],
+            maxTokens: 8000,
+            temperature: 0.3,
+            topP: 0.9,
+          } as genai.models.GenericChatRequest,
+        },
+      };
 
-    // Extract generated text from response
-    const inferenceResponse = response.generateTextResult.inferenceResponse as genai.models.CohereLlmInferenceResponse;
-    const generatedText = inferenceResponse.generatedTexts?.[0]?.text || '';
+      const response = await client.chat(chatDetails);
+      console.log('[Oracle GenAI] Response received');
+      console.log('  - Status:', response._httpResponse?.status);
+
+      const chatResponse = response.chatResult.chatResponse as genai.models.GenericChatResponse;
+      generatedText = chatResponse.choices?.[0]?.message?.content?.[0]?.text || '';
+    } else {
+      // Cohere and Llama use Text Generation API
+      let generateTextDetails: genai.requests.GenerateTextRequest;
+
+      if (isCohere) {
+        console.log('[Oracle GenAI] Using Cohere runtime');
+        generateTextDetails = {
+          generateTextDetails: {
+            compartmentId: config.compartmentOcid,
+            servingMode: {
+              servingType: 'ON_DEMAND',
+              modelId: config.modelId,
+            } as genai.models.OnDemandServingMode,
+            inferenceRequest: {
+              runtimeType: 'COHERE',
+              prompt: prompt,
+              maxTokens: 500,
+              temperature: 0.3,
+              topP: 0.9,
+              isStream: false,
+            } as genai.models.CohereLlmInferenceRequest,
+          },
+        };
+      } else {
+        // Meta Llama or default
+        console.log('[Oracle GenAI] Using Llama runtime');
+        generateTextDetails = {
+          generateTextDetails: {
+            compartmentId: config.compartmentOcid,
+            servingMode: {
+              servingType: 'ON_DEMAND',
+              modelId: config.modelId,
+            } as genai.models.OnDemandServingMode,
+            inferenceRequest: {
+              runtimeType: 'LLAMA',
+              prompt: prompt,
+              maxTokens: 500,
+              temperature: 0.3,
+              topP: 0.9,
+              isStream: false,
+            } as genai.models.LlamaLlmInferenceRequest,
+          },
+        };
+      }
+
+      const response = await client.generateText(generateTextDetails);
+      console.log('[Oracle GenAI] Response received');
+      console.log('  - Status:', response._httpResponse?.status);
+
+      if (isCohere) {
+        const inferenceResponse = response.generateTextResult.inferenceResponse as genai.models.CohereLlmInferenceResponse;
+        generatedText = inferenceResponse.generatedTexts?.[0]?.text || '';
+      } else {
+        const inferenceResponse = response.generateTextResult.inferenceResponse as genai.models.LlamaLlmInferenceResponse;
+        generatedText = inferenceResponse.generatedTexts?.[0]?.text || '';
+      }
+    }
 
     console.log('[Oracle GenAI] Generated text length:', generatedText.length);
 
@@ -245,19 +326,23 @@ function parseOracleResponse(responseText: string): TopicWeight[] {
   try {
     // Clean up response (remove markdown if present)
     let cleanText = responseText.trim();
+    
     if (cleanText.startsWith('```json')) {
       cleanText = cleanText.replace(/```json\n?/g, '').replace(/```\n?/g, '');
     }
 
     const parsed = JSON.parse(cleanText);
     
-    // Validate and normalize topics
+    // Accept any topics the AI returns - no restrictions!
     const topics: TopicWeight[] = [];
     for (const item of parsed.topics || []) {
-      const canonical = normalizeTopicName(item.topic);
-      if (canonical) {
+      if (item.topic && typeof item.topic === 'string' && item.topic.trim()) {
+        // Try to normalize to canonical topic, but if not found, use as-is
+        const canonical = normalizeTopicName(item.topic);
+        const topicName = canonical || item.topic.trim();
+        
         topics.push({
-          topic: canonical,
+          topic: topicName,
           weight: Math.min(1.0, Math.max(0.0, item.weight)),
         });
       }
@@ -271,19 +356,17 @@ function parseOracleResponse(responseText: string): TopicWeight[] {
 }
 
 /**
- * Fallback keyword-based extraction
+ * Fallback keyword-based extraction with smart topic detection
  */
 function extractInterestsFallback(text: string): ExtractedInterests {
-  const lowerText = text.toLowerCase();
   const topics: TopicWeight[] = [];
-
   const keywordScores: Record<string, number> = {};
 
+  // First, try to extract from canonical topics
   for (const topic of CANONICAL_TOPICS) {
     const topicLower = topic.toLowerCase();
-    
     const regex = new RegExp(`\\b${topicLower}\\b`, 'gi');
-    const matches = lowerText.match(regex);
+    const matches = text.match(regex);
     const count = matches ? matches.length : 0;
     
     if (count > 0) {
@@ -292,11 +375,70 @@ function extractInterestsFallback(text: string): ExtractedInterests {
     }
   }
 
-  for (const [topic, weight] of Object.entries(keywordScores)) {
+  // Enhanced extraction: Look for important capitalized phrases and domain terms
+  // Common patterns for skills, fields, and expertise
+  const importantPatterns = [
+    // Medical/Healthcare
+    /\b(Cancer Research|Oncology|Immunotherapy|Clinical Trial|Biostatistics|Medicine|Medical|Healthcare|Patient Care|Surgery|Pharmacology|Pathology|Neuroscience|Cardiology|Radiology|Pediatrics|Psychiatry)\b/gi,
+    // Academic majors
+    /\b(Pre-Med|Pre-Medical|Computer Science|Data Science|Molecular Biology|Bioengineering|Mechanical Engineering|Electrical Engineering|Chemical Engineering|Business Administration|Economics|Psychology|Sociology)\b/gi,
+    // Technical skills
+    /\b(Machine Learning|Artificial Intelligence|Deep Learning|Natural Language Processing|Computer Vision|Data Analysis|Web Development|Mobile Development|Cloud Computing|DevOps|Blockchain|Cybersecurity)\b/gi,
+    // Programming/Tools
+    /\b(Python|JavaScript|TypeScript|React|Node\.js|TensorFlow|PyTorch|Docker|Kubernetes|AWS|Azure|GCP)\b/gi,
+    // Business/Career
+    /\b(Product Management|Project Management|Business Development|Marketing|Sales|Consulting|Investment Banking|Venture Capital|Entrepreneurship|Strategy)\b/gi,
+    // Research areas
+    /\b(Research|Laboratory|Clinical|Experimental|Computational|Theoretical|Applied|Quantitative|Qualitative)\b/gi,
+    // Soft skills
+    /\b(Leadership|Communication|Teamwork|Problem Solving|Critical Thinking|Public Speaking|Design|UX|UI)\b/gi,
+  ];
+
+  for (const pattern of importantPatterns) {
+    const matches = text.match(pattern);
+    if (matches) {
+      for (const match of matches) {
+        const normalized = match.trim();
+        if (normalized.length > 2) {
+          // Try to normalize to canonical topic first
+          const canonical = normalizeTopicName(normalized);
+          const topicName = canonical || normalized;
+          
+          // Increase count for this topic
+          keywordScores[topicName] = (keywordScores[topicName] || 0) + 0.3;
+        }
+      }
+    }
+  }
+
+  // Look for capitalized multi-word terms (likely important topics)
+  // e.g., "Dana-Farber Cancer Institute" -> extract "Cancer"
+  const capitalizedPhrases = text.match(/\b([A-Z][a-z]+(?:\s+[A-Z][a-z]+){1,3})\b/g);
+  if (capitalizedPhrases) {
+    for (const phrase of capitalizedPhrases) {
+      // Extract meaningful words from the phrase
+      const words = phrase.split(/\s+/).filter(w => w.length > 3);
+      for (const word of words) {
+        if (!['Institute', 'University', 'College', 'School', 'Center', 'Department'].includes(word)) {
+          const canonical = normalizeTopicName(word);
+          if (canonical) {
+            keywordScores[canonical] = (keywordScores[canonical] || 0) + 0.15;
+          }
+        }
+      }
+    }
+  }
+
+  // Convert to array and normalize weights
+  for (const [topic, rawWeight] of Object.entries(keywordScores)) {
+    const weight = Math.min(1.0, Math.max(0.3, rawWeight));
     topics.push({ topic, weight });
   }
 
+  // Sort by weight
   topics.sort((a, b) => b.weight - a.weight);
+
+  console.log('[Fallback Extraction] Extracted topics:', topics.map(t => `${t.topic} (${Math.round(t.weight * 100)}%)`).join(', '));
 
   return {
     topics,

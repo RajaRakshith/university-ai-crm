@@ -17,6 +17,8 @@ export async function registerRoutes(
   app: Express
 ): Promise<Server> {
   
+  console.log('\n✅ Routes registered - Topic normalization ENABLED\n');
+  
   // Student onboarding
   app.post("/api/students/onboard", async (req, res) => {
     try {
@@ -132,6 +134,98 @@ export async function registerRoutes(
     }
   });
 
+  // Organizer onboarding
+  app.post("/api/organizers/onboard", async (req, res) => {
+    try {
+      const { email, name, organization } = req.body;
+
+      if (!email || !name) {
+        return res.status(400).json({ error: 'Email and name are required' });
+      }
+
+      // Check if organizer already exists
+      const existing = await prisma.organizer.findUnique({
+        where: { email },
+      });
+
+      if (existing) {
+        return res.status(409).json({ error: 'Organizer with this email already exists' });
+      }
+
+      // Create organizer
+      const organizer = await prisma.organizer.create({
+        data: {
+          email,
+          name,
+          organization,
+        },
+      });
+
+      res.json({ organizer });
+    } catch (error: any) {
+      console.error('Error onboarding organizer:', error);
+      res.status(500).json({ error: `Failed to onboard organizer: ${error.message}` });
+    }
+  });
+
+  // Get organizers (with optional email filter for login)
+  app.get("/api/organizers", async (req, res) => {
+    try {
+      const { email } = req.query;
+      
+      const organizers = await prisma.organizer.findMany({
+        where: email ? { email: String(email) } : undefined,
+        include: {
+          events: {
+            select: {
+              id: true,
+              title: true,
+              eventDate: true,
+            },
+          },
+        },
+        orderBy: {
+          createdAt: 'desc',
+        },
+      });
+
+      // If filtering by email, return array directly for login compatibility
+      res.json(email ? organizers : { organizers });
+    } catch (error: any) {
+      console.error('Error fetching organizers:', error);
+      res.status(500).json({ error: 'Failed to fetch organizers' });
+    }
+  });
+
+  // Get single organizer
+  app.get("/api/organizers/:id", async (req, res) => {
+    try {
+      const organizer = await prisma.organizer.findUnique({
+        where: { id: req.params.id },
+        include: {
+          events: {
+            include: {
+              topics: {
+                include: {
+                  topic: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!organizer) {
+        return res.status(404).json({ error: 'Organizer not found' });
+      }
+
+      res.json(organizer);
+    } catch (error: any) {
+      console.error('Error fetching organizer:', error);
+      res.status(500).json({ error: 'Failed to fetch organizer' });
+    }
+  });
+
   // File upload endpoint
   app.post("/api/students/upload", upload.single('file'), async (req, res) => {
     try {
@@ -170,6 +264,7 @@ export async function registerRoutes(
     try {
       const {
         centerId,
+        organizerId,
         title,
         description,
         eventDate,
@@ -180,13 +275,14 @@ export async function registerRoutes(
         requiredYears,
       } = req.body;
 
-      if (!centerId || !title || !description || !eventDate) {
+      if (!centerId || !organizerId || !title || !description || !eventDate) {
         return res.status(400).json({ error: 'Missing required fields' });
       }
 
       const event = await prisma.event.create({
         data: {
           centerId,
+          organizerId,
           title,
           description,
           eventDate: new Date(eventDate),
@@ -238,12 +334,22 @@ export async function registerRoutes(
     }
   });
 
-  // Get all events
+  // Get all events (with optional organizerId filter)
   app.get("/api/events", async (req, res) => {
     try {
+      const { organizerId } = req.query;
+      
       const events = await prisma.event.findMany({
+        where: organizerId ? { organizerId: String(organizerId) } : undefined,
         include: {
           center: true,
+          organizer: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+            },
+          },
           topics: {
             include: {
               topic: true,
@@ -446,6 +552,9 @@ export async function registerRoutes(
         return res.status(404).json({ error: 'Event not found' });
       }
 
+      console.log('\n🔍 DEBUG: Event matching for:', event.title);
+      console.log('Event topics:', event.topics.map(t => t.topic.name));
+
       // Get all students with interests
       const students = await prisma.student.findMany({
         include: {
@@ -455,6 +564,11 @@ export async function registerRoutes(
             },
           },
         },
+      });
+
+      console.log(`Found ${students.length} students`);
+      students.forEach(s => {
+        console.log(`  - ${s.name}: ${s.interests.map(i => i.topic.name).slice(0, 3).join(', ')}...`);
       });
 
       // Convert to scoring format
@@ -481,6 +595,11 @@ export async function registerRoutes(
       // Calculate matches
       const matches = scoreStudentsForEvent(studentVectors, eventVector, threshold);
 
+      console.log(`Matches found (threshold: ${threshold}):`, matches.length);
+      matches.forEach(m => {
+        console.log(`  - ${m.studentId}: ${(m.score * 100).toFixed(1)}% (${m.matchedTopics.join(', ')})`);
+      });
+
       // Enrich with full student data
       const enrichedMatches = matches.map(match => ({
         ...match,
@@ -491,6 +610,65 @@ export async function registerRoutes(
     } catch (error: any) {
       console.error('Error getting event matches:', error);
       res.status(500).json({ error: 'Failed to get matches' });
+    }
+  });
+
+  // Send campaign emails
+  app.post("/api/campaigns/send", async (req, res) => {
+    try {
+      const { eventId, subject, message, recipients } = req.body;
+
+      if (!eventId || !subject || !message || !recipients || !Array.isArray(recipients)) {
+        return res.status(400).json({ error: 'Missing required fields' });
+      }
+
+      // In a production app, you would integrate with an email service like SendGrid, Mailgun, etc.
+      // For now, we'll simulate sending emails by logging them
+      console.log('\n📧 CAMPAIGN SENT:');
+      console.log('Event ID:', eventId);
+      console.log('Subject:', subject);
+      console.log('Recipients:', recipients.length);
+      console.log('\n--- Sample Email ---');
+      
+      if (recipients.length > 0) {
+        const sampleRecipient = recipients[0];
+        const personalizedMessage = message.replace(/{name}/g, sampleRecipient.name);
+        console.log('To:', sampleRecipient.email);
+        console.log('Subject:', subject);
+        console.log('Body:\n', personalizedMessage);
+        console.log('-------------------\n');
+      }
+
+      // Log all recipients
+      recipients.forEach((recipient: any, index: number) => {
+        console.log(`${index + 1}. ${recipient.name} <${recipient.email}>`);
+      });
+
+      // In production, you would:
+      // 1. Create a Campaign record in the database
+      // 2. Send emails via email service
+      // 3. Track delivery status
+      // 
+      // Example with SendGrid:
+      // const sgMail = require('@sendgrid/mail');
+      // for (const recipient of recipients) {
+      //   const personalizedMessage = message.replace(/{name}/g, recipient.name);
+      //   await sgMail.send({
+      //     to: recipient.email,
+      //     from: 'events@university.edu',
+      //     subject: subject,
+      //     text: personalizedMessage,
+      //   });
+      // }
+
+      res.json({ 
+        success: true, 
+        message: `Campaign sent to ${recipients.length} students`,
+        // In production, return campaign ID and tracking info
+      });
+    } catch (error: any) {
+      console.error('Error sending campaign:', error);
+      res.status(500).json({ error: 'Failed to send campaign' });
     }
   });
 

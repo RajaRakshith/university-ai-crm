@@ -29,6 +29,17 @@ model Student {
   digestItems  DigestItem[]
 }
 
+model Organizer {
+  id          String   @id @default(cuid())
+  email       String   @unique
+  name        String
+  organization String?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  events Event[]
+}
+
 model InterestTopic {
   id          String   @id @default(cuid())
   name        String   @unique
@@ -66,6 +77,7 @@ model Center {
 model Event {
   id             String   @id @default(cuid())
   centerId       String
+  organizerId    String
   title          String
   description    String
   eventDate      DateTime
@@ -78,6 +90,7 @@ model Event {
   updatedAt      DateTime @updatedAt
 
   center       Center        @relation(fields: [centerId], references: [id], onDelete: Cascade)
+  organizer    Organizer     @relation(fields: [organizerId], references: [id], onDelete: Cascade)
   topics       EventTopic[]
   campaigns    Campaign[]
   digestItems  DigestItem[]

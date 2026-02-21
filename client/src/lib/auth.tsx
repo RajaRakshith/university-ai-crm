@@ -5,8 +5,10 @@ type Role = 'student' | 'organizer' | null;
 interface AuthContextType {
   role: Role;
   studentId: string | null;
+  organizerId: string | null;
   setRole: (role: Role) => void;
   setStudentId: (id: string | null) => void;
+  setOrganizerId: (id: string | null) => void;
   logout: () => void;
 }
 
@@ -15,13 +17,16 @@ const AuthContext = createContext<AuthContextType | undefined>(undefined);
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [role, setRoleState] = useState<Role>(null);
   const [studentId, setStudentIdState] = useState<string | null>(null);
+  const [organizerId, setOrganizerIdState] = useState<string | null>(null);
 
   useEffect(() => {
     // Load from localStorage on mount
     const savedRole = localStorage.getItem('userRole') as Role;
     const savedStudentId = localStorage.getItem('studentId');
+    const savedOrganizerId = localStorage.getItem('organizerId');
     if (savedRole) setRoleState(savedRole);
     if (savedStudentId) setStudentIdState(savedStudentId);
+    if (savedOrganizerId) setOrganizerIdState(savedOrganizerId);
   }, []);
 
   const setRole = (newRole: Role) => {
@@ -42,15 +47,26 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
+  const setOrganizerId = (id: string | null) => {
+    setOrganizerIdState(id);
+    if (id) {
+      localStorage.setItem('organizerId', id);
+    } else {
+      localStorage.removeItem('organizerId');
+    }
+  };
+
   const logout = () => {
     setRoleState(null);
     setStudentIdState(null);
+    setOrganizerIdState(null);
     localStorage.removeItem('userRole');
     localStorage.removeItem('studentId');
+    localStorage.removeItem('organizerId');
   };
 
   return (
-    <AuthContext.Provider value={{ role, studentId, setRole, setStudentId, logout }}>
+    <AuthContext.Provider value={{ role, studentId, organizerId, setRole, setStudentId, setOrganizerId, logout }}>
       {children}
     </AuthContext.Provider>
   );

@@ -12,10 +12,13 @@ import Students from "@/pages/students";
 import Events from "@/pages/events";
 import Campaigns from "@/pages/campaigns";
 import CampaignBuilder from "@/pages/campaign-builder";
+import SendCampaign from "@/pages/send-campaign";
 import SearchResults from "@/pages/search";
 import Analytics from "@/pages/analytics";
 import StudentOnboard from "@/pages/student-onboard";
 import StudentLogin from "@/pages/student-login";
+import OrganizerOnboard from "@/pages/organizer-onboard";
+import OrganizerLogin from "@/pages/organizer-login";
 import EventCreation from "@/pages/event-creation";
 import StudentDashboard from "@/pages/student-dashboard";
 import OrganizerDashboard from "@/pages/organizer-dashboard";
@@ -58,6 +61,8 @@ function Router() {
       </Route>
 
       {/* Organizer Routes */}
+      <Route path="/organizer/login" component={OrganizerLogin} />
+      <Route path="/organizer/onboard" component={OrganizerOnboard} />
       <Route path="/organizer/dashboard">
         <OrganizerRoute component={OrganizerDashboard} />
       </Route>
@@ -78,6 +83,9 @@ function Router() {
       </Route>
       <Route path="/campaigns/new">
         <OrganizerRoute component={CampaignBuilder} />
+      </Route>
+      <Route path="/campaigns/send/:eventId">
+        <OrganizerRoute component={SendCampaign} />
       </Route>
       <Route path="/events">
         <OrganizerRoute component={Events} />

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { useAuth } from "@/lib/auth";
 import { AppLayout } from "@/components/layout";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -23,13 +24,18 @@ interface Event {
 }
 
 export default function Events() {
+  const { organizerId } = useAuth();
   const [events, setEvents] = useState<Event[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchEvents = async () => {
       try {
-        const response = await fetch('/api/events');
+        // Filter events by logged-in organizer
+        const url = organizerId 
+          ? `/api/events?organizerId=${organizerId}`
+          : '/api/events';
+        const response = await fetch(url);
         if (response.ok) {
           const data = await response.json();
           setEvents(data.events || []);
@@ -41,7 +47,7 @@ export default function Events() {
       }
     };
     fetchEvents();
-  }, []);
+  }, [organizerId]);
 
   if (loading) {
     return (

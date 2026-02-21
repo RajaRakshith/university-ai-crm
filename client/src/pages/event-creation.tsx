@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useLocation } from 'wouter';
+import { useAuth } from '@/lib/auth';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -22,6 +23,7 @@ const CANONICAL_TOPICS = [
 
 export default function EventCreation() {
   const [, setLocation] = useLocation();
+  const { organizerId } = useAuth();
   const [centers, setCenters] = useState<Center[]>([]);
   
   const [formData, setFormData] = useState({
@@ -108,6 +110,11 @@ export default function EventCreation() {
     setLoading(true);
 
     try {
+      if (!organizerId) {
+        alert('You must be logged in to create an event');
+        return;
+      }
+
       const topics = Array.from(selectedTopics).map((topic) => ({
         topic,
         weight: 1.0,
@@ -118,6 +125,7 @@ export default function EventCreation() {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           ...formData,
+          organizerId,
           topics,
         }),
       });

@@ -15,7 +15,7 @@ export default function Landing() {
       if (role === 'student') {
         setLocation(isReturning ? '/student/login' : '/student/onboard');
       } else {
-        setLocation('/organizer/dashboard');
+        setLocation(isReturning ? '/organizer/login' : '/organizer/onboard');
       }
     }, 0);
   };
@@ -105,13 +105,23 @@ export default function Landing() {
                   Find best-matched students automatically
                 </li>
               </ul>
-              <Button 
-                onClick={() => selectRole('organizer')} 
-                className="w-full bg-purple-600 hover:bg-purple-700"
-                size="lg"
-              >
-                Continue as Organizer
-              </Button>
+              <div className="space-y-2">
+                <Button 
+                  onClick={() => selectRole('organizer', false)} 
+                  className="w-full bg-purple-600 hover:bg-purple-700"
+                  size="lg"
+                >
+                  Create New Account
+                </Button>
+                <Button 
+                  onClick={() => selectRole('organizer', true)} 
+                  variant="outline"
+                  className="w-full"
+                  size="lg"
+                >
+                  Sign In (Returning Organizer)
+                </Button>
+              </div>
             </CardContent>
           </Card>
         </div>

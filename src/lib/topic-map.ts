@@ -87,6 +87,22 @@ export const TOPIC_SYNONYMS: Record<string, CanonicalTopic> = {
   'biotech': 'Healthcare',
   'pharma': 'Healthcare',
   'health tech': 'Healthcare',
+  'healthcare industry': 'Healthcare',
+  'medicine': 'Healthcare',
+  'clinical': 'Healthcare',
+  'hospital': 'Healthcare',
+  'oncology': 'Healthcare',
+  'cancer': 'Healthcare',
+  'immunotherapy': 'Healthcare',
+  'therapy': 'Healthcare',
+  'diagnosis': 'Healthcare',
+  'treatment': 'Healthcare',
+  'pathology': 'Healthcare',
+  'radiology': 'Healthcare',
+  'surgery': 'Healthcare',
+  'cardiology': 'Healthcare',
+  'neurology': 'Healthcare',
+  'pediatrics': 'Healthcare',
   
   // Tech variations
   'data analysis': 'Data Science',
@@ -126,9 +142,48 @@ export function normalizeTopicName(input: string): CanonicalTopic | null {
   );
   if (canonical) return canonical;
   
-  // Check synonyms
+  // Check exact synonyms first
   if (normalized in TOPIC_SYNONYMS) {
     return TOPIC_SYNONYMS[normalized];
+  }
+  
+  // Fuzzy matching: check if any synonym keyword appears in the input
+  for (const [synonym, canonical] of Object.entries(TOPIC_SYNONYMS)) {
+    // Check if the normalized input contains the synonym
+    if (normalized.includes(synonym) || synonym.includes(normalized)) {
+      return canonical;
+    }
+  }
+  
+  // Partial keyword matching for canonical topics
+  // If input contains healthcare-related keywords, map to Healthcare
+  const healthcareKeywords = ['health', 'medical', 'clinic', 'hospital', 'cancer', 'disease', 'therapy', 'treatment', 'patient', 'diagnosis'];
+  if (healthcareKeywords.some(keyword => normalized.includes(keyword))) {
+    return 'Healthcare';
+  }
+  
+  // AI/ML keywords
+  const aiKeywords = ['artificial intelligence', 'neural', 'deep learning', 'computer vision', 'nlp', 'natural language'];
+  if (aiKeywords.some(keyword => normalized.includes(keyword))) {
+    return 'AI';
+  }
+  
+  // Machine Learning keywords
+  const mlKeywords = ['machine learning', 'ml ', 'supervised', 'unsupervised', 'model training', 'algorithm'];
+  if (mlKeywords.some(keyword => normalized.includes(keyword))) {
+    return 'Machine Learning';
+  }
+  
+  // Computer Science keywords
+  const csKeywords = ['computer science', 'programming', 'software', 'coding', 'algorithm', 'data structure'];
+  if (csKeywords.some(keyword => normalized.includes(keyword))) {
+    return 'Computer Science';
+  }
+  
+  // Engineering keywords
+  const engineeringKeywords = ['engineering', 'engineer', 'technical', 'development'];
+  if (engineeringKeywords.some(keyword => normalized.includes(keyword))) {
+    return 'Engineering';
   }
   
   return null;
